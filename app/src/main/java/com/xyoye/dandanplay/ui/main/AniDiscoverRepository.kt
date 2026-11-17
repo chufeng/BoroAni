@@ -29,6 +29,7 @@ internal class AniDiscoverRepository(
     private val fetch: suspend (String) -> String
 ) {
     private var post: suspend (String, String) -> String = { _, _ -> throw IOException("该数据源不支持 POST") }
+    private var localize: (DiscoverBatch) -> DiscoverBatch = { it }
 
     constructor(context: Context) : this(
         File(context.cacheDir, "ani-discover"),
@@ -36,6 +37,11 @@ internal class AniDiscoverRepository(
         requester(context.applicationContext)
     ) {
         post = aniListPoster(context.applicationContext)
+        val titles by lazy {
+            AniChineseTitles.parse(context.applicationContext.assets.open("ani-discover/chinese-titles.json")
+                .bufferedReader().use { it.readText() })
+        }
+        localize = { titles.apply(it) }
     }
 
     suspend fun directory(year: Int?, month: Int?, offset: Int, refresh: Boolean): DiscoverResult<DiscoverBatch> {
@@ -95,7 +101,7 @@ internal class AniDiscoverRepository(
         return loadExternal(
             ANILIST_URL, "anilist-season-$season-$year-$page", "AniList $year $season 新番", refresh,
             AniListRules::season, jsonQuery(AniListRules.seasonQuery(page, season, year))
-        )
+        ).withChineseNames()
     }
 
     suspend fun anilistRank(page: Int, refresh: Boolean): DiscoverResult<DiscoverBatch> {
@@ -103,7 +109,7 @@ internal class AniDiscoverRepository(
         return loadExternal(
             ANILIST_URL, "anilist-rank-$page", "AniList 高分榜", refresh,
             AniListRules::rank, jsonQuery(AniListRules.rankQuery(page))
-        )
+        ).withChineseNames()
     }
 
     suspend fun anilistSchedule(weekday: Int, page: Int, refresh: Boolean): DiscoverResult<DiscoverBatch> {
@@ -113,9 +119,14 @@ internal class AniDiscoverRepository(
         return loadExternal(
             ANILIST_URL, "anilist-schedule-$weekday-$page", "AniList 放送表", refresh,
             AniListRules::schedule, jsonQuery(AniListRules.scheduleQuery(page, from, to))
-        )
+        ).withChineseNames()
     }
 
+    private suspend fun DiscoverResult<DiscoverBatch>.withChineseNames(): DiscoverResult<DiscoverBatch> =
+        withContext(Dispatchers.IO) {
+            val batch = localize(value)
+            copy(value = batch, notice = notice + "\n片名中文优先，其次日语 / 原名；中文 ${batch.items.count { it.chinese.isNotBlank() }}/${batch.items.size} 条。译名：bangumi-data · CC BY 4.0 · 2026-11-17 快照")
+        }
 
     private suspend fun <T> loadExternal(
         url: String, cacheKey: String, label: String, refresh: Boolean, parse: (String) -> T,

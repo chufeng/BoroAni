@@ -89,7 +89,7 @@ internal object AniListRules {
             }
         }
         return DiscoverSubject(
-            id = id, chinese = native.ifBlank { romaji }, original = romaji,
+            id = id, chinese = "", original = native.ifBlank { romaji },
             date = startDate(obj), summary = summary, score = score(obj["averageScore"]),
             rank = rank, imageUrl = cover(AniRules.obj(obj["coverImage"]).str("large"))
         )

@@ -99,7 +99,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(),
         dataBinding.navigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.navigation_home -> {
-                    title = "弹弹play"
+                    title = "老爷机追番"
                     switchFragment(TAG_FRAGMENT_HOME)
                 }
 

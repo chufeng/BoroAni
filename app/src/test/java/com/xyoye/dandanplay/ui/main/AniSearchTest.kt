@@ -102,4 +102,32 @@ class AniSearchTest {
         } catch (_: CancellationException) { }
         assertEquals(1, calls)
     }
+
+    @Test fun chineseOnBackupSourceWinsBeforeJapaneseOnCurrentSource() = runBlocking {
+        val calls = mutableListOf<Pair<String, String>>()
+        val result = AniSearch({ s, q ->
+            calls.add(s.id to q)
+            if (s == second || q == "日本語") hit else emptyList()
+        }).find(listOf(first, second), first, "中文片名 第二季", true, listOf("日本語"))
+        assertEquals(listOf(first.id to "中文片名", first.id to "中文片名 第二季", second.id to "中文片名"), calls)
+        assertEquals(second, result.source)
+    }
+
+    @Test fun japaneseFallbackRunsOnlyAfterAllChineseQueriesMiss() = runBlocking {
+        val calls = mutableListOf<Pair<String, String>>()
+        val result = AniSearch({ s, q ->
+            calls.add(s.id to q)
+            if (q == "日本語") hit else emptyList()
+        }).find(listOf(first, second), first, "中文片名 第二季", true, listOf("日本語"))
+        assertEquals(listOf(first.id to "中文片名", first.id to "中文片名 第二季", second.id to "中文片名", second.id to "中文片名 第二季", first.id to "日本語"), calls)
+        assertEquals("日本語", result.keyword)
+        assertEquals(first, result.source)
+    }
+
+    @Test fun failedTransportDoesNotRetrySourceInAnotherLanguage() = runBlocking {
+        val result = AniSearch({ s, _ -> if (s == first) throw IOException("HTTP 503") else emptyList() })
+            .find(listOf(first, second), first, "中文片名", true, listOf("日本語"))
+        assertEquals(1, result.attempts.count { it.source == first })
+        assertEquals(3, result.attempts.size)
+    }
 }

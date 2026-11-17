@@ -1,9 +1,13 @@
-# Ani TV · 弹弹play 概念版电视看番改造
+# 老爷机追番
+
+面向低配 Android 电视的追番界面。发现、榜单和搜索优先中文，缺失时使用日语原名。中文译名来源和修改说明见 [资料署名](docs/chinese-title-attribution.md)。
+
+## 项目来源
 
 > 基于开源项目 [DanDanPlayForAndroid](https://github.com/xyoye/DanDanPlayForAndroid)（弹弹play 概念版）改造的 **Android TV 看番客户端**。
 > 目标是把「选源 → 搜番 → 选集 → 在线播放」这条链路搬到电视遥控器上，而不只是给手机播放器加接口。
 
-上游项目采用 Apache License 2.0，本项目同样以 Apache-2.0 发布，详见 [LICENSE](LICENSE)；上游原始说明保留在 [README.upstream.md](README.upstream.md)。
+上游项目采用 Apache License 2.0，本项目代码同样以 Apache-2.0 发布，详见 [LICENSE](LICENSE)；内置中文片名数据单独遵循 CC BY 4.0，详见[资料署名](docs/chinese-title-attribution.md)；上游原始说明保留在 [README.upstream.md](README.upstream.md)。
 
 ![hero](docs/assets/hero.png)
 
@@ -25,7 +29,7 @@
 |---|---|
 | 发现 | 当季新番（按季度）、每日放送（按星期）、高分榜，支持加载更多 |
 | 源管理 | 导入 Ani 订阅 URL（或官方引用的公开订阅）、启用/停用、选择当前源 |
-| 搜索 | 详情短词优先、手动原词优先；无结果自动尝试最多3个已启用源，显示逐次结果与错误 |
+| 搜索 | 详情先中文短词及完整中文、再日语；手动输入先搜原词；最多3个已启用源，显示逐次结果与错误 |
 | 播放 | 选集、直链提取、UA/Referer 透传、续播、电视硬解 |
 | 弹幕 | 播放页手动搜索绑定（自动按流哈希匹配在流媒体上不适用，已排除） |
 | 附加 | Jellyfin 媒体库、CMS 采集源、播放历史 |

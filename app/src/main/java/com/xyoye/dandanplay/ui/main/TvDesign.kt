@@ -38,7 +38,7 @@ internal object TvDesign {
         }
         return InsetDrawable(shape, dp(c, 2))
     }
-    fun text(c: Context, value: String, size: Float = 24f, bold: Boolean = false) = TextView(c).apply {
+    fun text(c: Context, value: String, size: Float = 22f, bold: Boolean = false) = TextView(c).apply {
         text = value; textSize = size; setTextColor(ink)
         if (bold) setTypeface(typeface, Typeface.BOLD)
         setPadding(dp(c, 8), dp(c, 6), dp(c, 8), dp(c, 10))
@@ -47,14 +47,17 @@ internal object TvDesign {
         view.isFocusable = true; view.isFocusableInTouchMode = true
         if (view.id == View.NO_ID) view.id = View.generateViewId()
         val ctx = view.context
+        // Drawable assignment can replace padding with the drawable's insets on Android 6.
+        val left = view.paddingLeft; val top = view.paddingTop
+        val right = view.paddingRight; val bottom = view.paddingBottom
         view.background = StateListDrawable().apply {
             addState(intArrayOf(android.R.attr.state_focused), background(ctx, true))
             addState(intArrayOf(android.R.attr.state_selected), background(ctx, false, Color.parseColor("#EDF2E9")))
             addState(intArrayOf(), background(ctx, false))
         }
+        view.setPadding(left, top, right, bottom)
         if (view is TextView) view.setTextColor(ink)
         view.setOnFocusChangeListener { v, has ->
-            v.scaleX = if (has) 1.02f else 1f; v.scaleY = if (has) 1.02f else 1f
             if (has) v.post { v.requestRectangleOnScreen(Rect(0, 0, v.width, v.height), false) }
         }
     }
@@ -63,10 +66,10 @@ internal object TvDesign {
      * 在电视上会让卡片左侧被裁、右下出现灰边。自绘卡片可以完全控制边界。
      */
     fun button(c: Context, label: String, action: () -> Unit) = TextView(c).apply {
-        text = label; textSize = 24f
+        text = label; textSize = 22f
         gravity = android.view.Gravity.CENTER_VERTICAL
-        isSingleLine = true
-        ellipsize = android.text.TextUtils.TruncateAt.END
+        isSingleLine = false
+        ellipsize = null
         includeFontPadding = false
         minHeight = dp(c, 60)
         setPadding(dp(c, 20), dp(c, 12), dp(c, 20), dp(c, 12))
@@ -82,9 +85,9 @@ internal object TvDesign {
         addView(LinearLayout(c).apply {
             orientation = LinearLayout.VERTICAL; setPadding(dp(c, 20), dp(c, 16), dp(c, 12), dp(c, 12))
             background = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, intArrayOf(Color.parseColor("#FAF5EB"), Color.parseColor("#F2FAF5EB"), Color.TRANSPARENT))
-            addView(text(c, "DANDANPLAY  /  TV", 16f, true).apply { setTextColor(teal); setPadding(dp(c, 8), 0, dp(c, 8), dp(c, 4)) })
-            addView(text(c, title, 32f, true).apply { setPadding(dp(c, 8), 0, dp(c, 8), dp(c, 4)); maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END })
-            addView(text(c, subtitle, 20f).apply { setPadding(dp(c, 8), 0, dp(c, 8), 0); maxLines = 2; ellipsize = android.text.TextUtils.TruncateAt.END; maxWidth = dp(c, 440) })
+            addView(text(c, "老爷机追番  /  TV", 16f, true).apply { setTextColor(teal); setPadding(dp(c, 8), 0, dp(c, 8), dp(c, 4)) })
+            addView(text(c, title, 28f, true).apply { setPadding(dp(c, 8), 0, dp(c, 8), dp(c, 4)); ellipsize = null })
+            addView(text(c, subtitle, 18f).apply { setPadding(dp(c, 8), 0, dp(c, 8), 0); ellipsize = null; maxWidth = dp(c, 440) })
         }, FrameLayout.LayoutParams(-1, -1))
     }
     private var loader: ImageLoader? = null

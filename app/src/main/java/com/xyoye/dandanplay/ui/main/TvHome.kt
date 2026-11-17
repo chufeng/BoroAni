@@ -50,16 +50,16 @@ internal class TvHome(private val activity: MainActivity) {
             orientation = LinearLayout.HORIZONTAL
             setPadding(dp(32), dp(32), dp(32), dp(32))
             setBackgroundColor(TvDesign.paper)
-            clipChildren = false
+            clipChildren = true
         }
-        val rail = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = false }
+        val rail = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = true }
         shell.addView(ScrollView(activity).apply { addView(rail) }, LinearLayout.LayoutParams(dp(156), -1).apply { rightMargin = dp(24) })
-        rail.addView(TvDesign.text(activity, "弹弹play", 27f, true))
+        rail.addView(TvDesign.text(activity, "老爷机追番", 22f, true))
         rail.addView(TvDesign.text(activity, "ANIME / TV", 16f).apply { setTextColor(TvDesign.teal) })
         val navigation = mutableListOf<View>()
         fun nav(label: String, selected: Boolean, action: () -> Unit) {
-            val view = TvDesign.button(activity, (if (selected) "• " else "  ") + label, action).apply {
-                textSize = 22f; isSelected = selected
+            val view = TvDesign.button(activity, label, action).apply {
+                textSize = 20f; isSelected = selected
             }
             navigation.add(view)
             rail.addView(view, LinearLayout.LayoutParams(-1, dp(60)).apply { bottomMargin = dp(8) })
@@ -70,13 +70,13 @@ internal class TvHome(private val activity: MainActivity) {
         }
         nav("媒体库", page == "sources") { page = "sources"; restoreIndex = 2; render() }
         nav("设置", page == "settings") { page = "settings"; restoreIndex = 3; render() }
-        val root = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = false }
+        val root = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = true }
         shell.addView(root, LinearLayout.LayoutParams(0, -1, 1f))
         root.addView(TextView(activity).apply {
             text = when (page) {
                 "sources" -> "源列表 / 媒体库"
                 "settings" -> "电视设置"
-                else -> "弹弹play · TV 预览"
+                else -> "老爷机追番 · TV"
             }
             textSize = 34f
             setTextColor(TvDesign.ink)
@@ -87,7 +87,7 @@ internal class TvHome(private val activity: MainActivity) {
             setTextColor(TvDesign.muted)
             setPadding(0, dp(8), 0, dp(12))
         })
-        val list = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; setPadding(dp(6), dp(6), dp(6), dp(12)) }
+        val list = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = true; setPadding(dp(6), dp(6), dp(6), dp(12)) }
         list.addView(TvDesign.hero(activity, when (page) {
             "sources" -> "把喜欢的内容，连到大屏"
             "settings" -> "简单设置，安心观看"

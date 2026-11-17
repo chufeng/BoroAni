@@ -118,9 +118,11 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
         }
     }
     private suspend fun performSearch(selected: AniSource, query: String, shortFirst: Boolean) {
-        val outcome = searcher.find(sources.filter { repository.enabled(it) }, selected, query, shortFirst) { entry, word ->
+        val alternate = metadata?.takeIf { searchReturn == "metadata" && it.chinese.isNotBlank() && query == it.searchTitle(false) }
+            ?.searchTitle(true)?.takeIf { it.isNotBlank() && it != query }
+        val outcome = searcher.find(sources.filter { repository.enabled(it) }, selected, query, shortFirst, listOfNotNull(alternate)) { entry, word ->
             lastSearch = "${entry.name} ·「$word」"
-            message = "正在搜索 $lastSearch；无结果将尝试短词与备用源，返回可取消"
+            message = "正在搜索 $lastSearch；先中文与备用源，再日语 / 原名，返回可取消"
             render()
         }
         results = outcome.items
@@ -173,18 +175,18 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
     private fun renderUnsafe() {
         if (!active) return
         fun dp(n: Int) = (n * activity.resources.displayMetrics.density).toInt()
-        val shell = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL; setPadding(dp(32), dp(32), dp(32), dp(32)); setBackgroundColor(TvDesign.paper); clipChildren = false }
-        val rail = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = false }
-        shell.addView(ScrollView(activity).apply { isFillViewport = true; clipChildren = false; addView(rail) }, LinearLayout.LayoutParams(dp(156), -1).apply { rightMargin = dp(24) })
-        val root = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = false }
+        val shell = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL; setPadding(dp(32), dp(32), dp(32), dp(32)); setBackgroundColor(TvDesign.paper); clipChildren = true }
+        val rail = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = true }
+        shell.addView(ScrollView(activity).apply { isFillViewport = true; clipChildren = true; addView(rail) }, LinearLayout.LayoutParams(dp(156), -1).apply { rightMargin = dp(24) })
+        val root = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = true }
         shell.addView(root, LinearLayout.LayoutParams(0, -1, 1f))
-        rail.addView(TvDesign.text(activity, "弹弹play", 27f, true))
+        rail.addView(TvDesign.text(activity, "老爷机追番", 22f, true))
         rail.addView(TvDesign.text(activity, "ANIME / TV", 16f).apply { setTextColor(TvDesign.teal) })
         val navigation = mutableListOf<View>()
         val rows = mutableListOf<List<View>>()
         val views = mutableListOf<View>()
         fun nav(label: String, selected: Boolean = false, action: () -> Unit) {
-            val v = TvDesign.button(activity, (if (selected) "• " else "  ") + label, action).apply { textSize = 22f; isSelected = selected }
+            val v = TvDesign.button(activity, label, action).apply { textSize = 20f; isSelected = selected }
             rail.addView(v, LinearLayout.LayoutParams(-1, dp(60)).apply { bottomMargin = dp(8) }); navigation.add(v)
         }
         nav("发现", page == "discover") { openCatalog("season") }
@@ -195,18 +197,18 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
         nav("源设置", page == "sources") { page = "sources"; work("读取本地订阅") { loadSources() } }
         nav("使用帮助", page == "help") { job?.cancel(); job = null; retry = null; page = "help"; render() }
         nav("主菜单") { close(); exit() }
-        fun text(value: String, size: Float = 24f, target: LinearLayout = root) {
+        fun text(value: String, size: Float = 22f, target: LinearLayout = root) {
             val chunks = if (target === root) listOf(value) else value.split('\n').flatMap { it.chunked(280) }.filter { it.isNotBlank() }
             chunks.forEach { part ->
-                val view = TvDesign.text(activity, part, size.coerceAtLeast(20f))
+                val view = TvDesign.text(activity, part, size.coerceAtLeast(18f))
                 if (target !== root) { TvDesign.focus(view); views.add(view); rows.add(listOf(view)) }
                 target.addView(view)
             }
         }
-        text(when (page) { "discover" -> "发现番剧 · 当季新番"; "catalog" -> if (kind == "calendar") "每日放送 · AniList" else "榜单 · AniList 高分动画"; "metadata" -> metadata?.title ?: "条目详情"; "search" -> "搜索番剧 · ${source?.name ?: "尚未选源"}"; "picker" -> "选择已启用 Ani 源"; "sources" -> "源管理 · 订阅不是番剧目录"; "help" -> "使用帮助"; else -> "选集 · ${subject?.name}" }, 25f)
-        root.addView(TvDesign.text(activity, message, 20f).apply { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END })
-        val list = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; setPadding(dp(6), dp(6), dp(6), dp(12)) }
-        root.addView(ScrollView(activity).apply { isFillViewport = true; clipChildren = false; addView(list) }, LinearLayout.LayoutParams(-1,0,1f))
+        text(when (page) { "discover" -> "发现番剧 · 当季新番"; "catalog" -> if (kind == "calendar") "每日放送 · AniList" else "榜单 · AniList 高分动画"; "metadata" -> metadata?.title ?: "条目详情"; "search" -> "搜索番剧 · ${source?.name ?: "尚未选源"}"; "picker" -> "选择已启用 Ani 源"; "sources" -> "源管理 · 订阅不是番剧目录"; "help" -> "使用帮助"; else -> "选集 · ${subject?.name}" }, 23f)
+        root.addView(TvDesign.text(activity, message, 18f))
+        val list = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = true; setPadding(dp(6), dp(6), dp(6), dp(12)) }
+        root.addView(ScrollView(activity).apply { isFillViewport = true; clipChildren = true; addView(list) }, LinearLayout.LayoutParams(-1,0,1f))
         fun button(label: String, action: () -> Unit) {
             val index = views.size
             val view = TvDesign.button(activity, label) { focus[page] = index; action() }
@@ -220,7 +222,7 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { changed(s?.toString().orEmpty()) }
                 override fun afterTextChanged(s: android.text.Editable?) {}
             })
-            TvDesign.focus(this); setHintTextColor(TvDesign.muted); setPadding(dp(16), 0, dp(16), 0); textSize = 24f
+            TvDesign.focus(this); setHintTextColor(TvDesign.muted); setPadding(dp(16), 0, dp(16), 0); textSize = 22f
             TvDesign.editor(this)
             views.add(this); rows.add(listOf(this)); list.addView(this, LinearLayout.LayoutParams(-1,dp(64)).apply { bottomMargin = dp(12) })
         }
@@ -230,12 +232,12 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                 text(notice.ifBlank { "选择季度或星期查看番剧；数据来自 AniList 公开接口" }, 20f, list)
                 fun filters(entries: List<Pair<String, () -> Unit>>) {
                     entries.chunked(4).forEach { group ->
-                        val row = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL; clipChildren = false }
+                        val row = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL; clipChildren = true }
                         val members = mutableListOf<View>()
                         list.addView(row, LinearLayout.LayoutParams(-1, -2))
                         group.forEach { (label, action) ->
                             val index = views.size
-                            val v = TvDesign.button(activity, label) { focus[page] = index; action() }.apply { textSize = 22f }
+                            val v = TvDesign.button(activity, label) { focus[page] = index; action() }.apply { textSize = 20f }
                             views.add(v); members.add(v)
                             row.addView(v, LinearLayout.LayoutParams(0, dp(60), 1f).apply { rightMargin = dp(8); bottomMargin = dp(12) })
                         }
@@ -256,17 +258,17 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                 }
                 val columns = if (activity.resources.configuration.screenWidthDp >= 900) 4 else 3
                 items.chunked(columns).forEach { group ->
-                    val row = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL; clipChildren = false }
+                    val row = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL; clipChildren = true }
                     val members = mutableListOf<View>()
                     list.addView(row, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(20) })
                     group.forEach { item ->
                         val index = views.size
                         val card = LinearLayout(activity).apply {
-                            orientation = LinearLayout.VERTICAL; setPadding(dp(7), dp(7), dp(7), dp(10)); clipChildren = false
+                            orientation = LinearLayout.VERTICAL; setPadding(dp(7), dp(7), dp(7), dp(10)); clipChildren = true
                             contentDescription = item.title + "，确认查看详情"
                             TvDesign.focus(this)
                             addView(TvDesign.poster(activity, item.imageUrl, item.title), LinearLayout.LayoutParams(-1, -2))
-                            addView(TvDesign.text(activity, item.title, 24f, true).apply { maxLines = 2; minLines = 2; ellipsize = android.text.TextUtils.TruncateAt.END })
+                            addView(TvDesign.text(activity, item.title, 21f, true).apply { minLines = 2 })
                             addView(TvDesign.text(activity, (if (kind == "rank" && item.rank > 0) "#${item.rank}  ·  " else "") + if (item.score > 0) "评分 ${item.score}" else item.date.ifBlank { "首播未提供" }, 20f))
                             setOnClickListener { focus[page] = index; openMetadata(item) }
                         }
@@ -286,8 +288,8 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                     detail.addView(TvDesign.poster(activity, item.imageUrl, item.title), LinearLayout.LayoutParams(dp(160), dp(240)).apply { rightMargin = dp(20) })
                     detail.addView(LinearLayout(activity).apply {
                         orientation = LinearLayout.VERTICAL
-                        addView(TvDesign.text(activity, item.title, 34f, true))
-                        addView(TvDesign.text(activity, item.original, 24f))
+                        addView(TvDesign.text(activity, item.title, 28f, true))
+                        addView(TvDesign.text(activity, item.original, 21f))
                         addView(TvDesign.text(activity, "首播/更新 ${item.date.ifBlank { "未提供" }}" + if (item.score > 0) " · 评分 ${item.score}" else "", 22f))
                         addView(TvDesign.text(activity, "AniList #${item.id} · 资料不代表源有资源", 20f))
                     }, LinearLayout.LayoutParams(0, -2, 1f))
@@ -296,7 +298,7 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                     list.addView(detail, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(16) })
                 }
                 button("搜索资源 · 使用片名与当前已启用 Ani 源") { searchMetadata() }
-                button("编辑关键词 / 中文与原名切换") { openSearch("metadata", item?.searchTitle(false).orEmpty()) }
+                button("编辑关键词 / 中文与日语切换") { openSearch("metadata", item?.searchTitle(false).orEmpty()) }
                 button("刷新当前列表") { page = if (kind == "season") "discover" else "catalog"; loadList(false, true) }
                 button("返回番剧列表") { back() }
                 if (item != null) {
@@ -315,11 +317,11 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                 }
                 button("搜索 · ${source?.name ?: "请先选择源"}") { search() }
                 button("换源（仅已启用受支持的 Ani 源）") { pickerReturn = "search"; page = "picker"; work("读取已启用源") { loadSources() } }
-                button("使用中文名") { metadata?.let { keyword = it.searchTitle(false) }; render() }
-                button("使用原名") { metadata?.let { keyword = it.searchTitle(true) }; render() }
+                button("使用中文名（默认优先）") { metadata?.let { keyword = it.searchTitle(false) }; render() }
+                button("使用日语 / 原名") { metadata?.let { keyword = it.searchTitle(true) }; render() }
                 button("源管理 / 导入订阅") { page = "sources"; work("读取订阅") { loadSources() } }
                 button("返回") { back() }
-                text("当前源：${source?.name ?: "未选择"}；关键词：「$keyword」。手动搜索先用原词；详情搜索优先短词。无结果按顺序重试，最多 ${AniSearch.MAX_SOURCES} 个已启用受支持源、每源2个词，返回可取消。", target = list)
+                text("当前源：${source?.name ?: "未选择"}；关键词：「$keyword」。手动搜索先用输入原词；详情先搜中文短词、完整中文，所有备用源未命中再搜日语 / 原名。最多 ${AniSearch.MAX_SOURCES} 个已启用受支持源，每源最多3个词、整轮60秒，返回可取消。", target = list)
                 if (searched) {
                     text(if (results.isEmpty()) "本轮未找到匹配条目，具体空结果或错误见下方记录；不表示全网无资源。可编辑关键词或手动换源。" else "本次 $lastSearch 返回 ${results.size} 条（最多500条）；请选择匹配条目并核对季数。", target = list)
                     text(searchHistory, 20f, list)
@@ -357,7 +359,7 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                 button("返回发现首页") { back() }
                 button("搜索番剧") { openSearch("discover") }
                 button("源管理") { page = "sources"; work("读取订阅") { loadSources() } }
-                text("1. 发现首页默认显示当季首月放送的番剧，可切换本季三个月、每日放送与番剧榜，并加载更多。\n2. 番剧资料来自 AniList 公开接口，国内可直接连接、不需要代理；B站番剧索引已长期停更，故不再作为新番来源。\n3. 选择条目查看名称、更新与评分，再点“搜索资源”；优先用短片名搜索，未命中再尝试完整片名与备用源。\n4. 初次使用请到源管理导入公开默认订阅或可信 Ani 订阅，选择并启用源。订阅/源不是番剧目录，CMS 与 Jellyfin 保持独立入口。\n5. 手动搜索先用输入原词。每次最多尝试3个已启用受支持源，每源最多2个词；结果显示实际源、关键词和失败原因。请核对番名与季数；未找到不表示全网没有。\n6. 方向键移动并滚动，确认选择；输入框按确认打开输入法，完成/搜索提交，返回先关闭键盘，再返回上级。请求中可取消。\n7. 当季按季度筛选，含连载与未开播，不是“今天上线”；放送表按北京时间归集；榜单是 AniList 评分排序，不是实时播放量。\n8. 本机缓存1小时，联网失败会显示上次结果的采集时间；元数据不保证源有资源；不要求 AppID。\n9. 仅支持 Ani Selector 静态子集；不执行 JS，不绕登录、验证码、付费限制或 DRM。播放保持现有 SurfaceView 链路。", 19f, list)
+                text("1. 发现首页默认显示当季首月放送的番剧，可切换本季三个月、每日放送与番剧榜，并加载更多。\n2. 番剧资料来自 AniList 公开接口，国内可直接连接、不需要代理；B站番剧索引已长期停更，故不再作为新番来源。\n3. 选择条目查看名称、更新与评分，再点“搜索资源”；优先用中文短片名搜索，未命中再尝试完整中文与备用源，最后尝试日语 / 原名。\n4. 初次使用请到源管理导入公开默认订阅或可信 Ani 订阅，选择并启用源。订阅/源不是番剧目录，CMS 与 Jellyfin 保持独立入口。\n5. 手动搜索先用输入原词。每次最多尝试3个已启用受支持源，中文最多2个词，未命中可再试1个日语词；结果显示实际源、关键词和失败原因。请核对番名与季数；未找到不表示全网没有。\n6. 方向键移动并滚动，确认选择；输入框按确认打开输入法，完成/搜索提交，返回先关闭键盘，再返回上级。请求中可取消。\n7. 当季按季度筛选，含连载与未开播，不是“今天上线”；放送表按北京时间归集；榜单是 AniList 评分排序，不是实时播放量。\n8. 中文片名优先，其次日语 / 原名；中文来自 bangumi-data（CC BY 4.0，2026-11-17 本地快照），按 AniList ID 精确对应；缺译名保留原名。本机缓存1小时，联网失败会显示上次结果的采集时间；元数据不保证源有资源；不要求 AppID。\n9. 仅支持 Ani Selector 静态子集；不执行 JS，不绕登录、验证码、付费限制或 DRM。播放保持现有 SurfaceView 链路。", 19f, list)
             }
             "episodes" -> {
                 button("返回搜索结果") { back() }

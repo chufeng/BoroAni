@@ -19,7 +19,7 @@ internal data class AniSearchResult(
     val attempts: List<AniSearchAttempt>
 )
 
-/** Sequential, cancellable fallback over at most three enabled sources and two keywords. */
+/** Search Chinese across enabled sources before falling back to the Japanese title. */
 internal class AniSearch(
     private val request: suspend (AniSource, String) -> List<AniItem>,
     private val timeoutMillis: Long = 8000
@@ -50,6 +50,7 @@ internal class AniSearch(
         selected: AniSource,
         keyword: String,
         shortFirst: Boolean = false,
+        fallbackKeywords: List<String> = emptyList(),
         onAttempt: (AniSource, String) -> Unit = { _, _ -> }
     ): AniSearchResult {
         val queries = keywords(keyword, shortFirst)
@@ -59,8 +60,12 @@ internal class AniSearch(
             ?: error("当前源未启用或规则不受支持，请重新选源")
         val candidates = (listOf(current) + eligible.filter { it.id != current.id }).take(MAX_SOURCES)
         val attempts = mutableListOf<AniSearchAttempt>()
-        for (source in candidates) {
-            for (query in queries) {
+        val groups = listOf(queries) + fallbackKeywords.take(1).map { value ->
+            keywords(value, true).filter { it !in queries }.take(1)
+        }
+        val unavailable = mutableSetOf<String>()
+        for (group in groups) for (source in candidates.filter { it.id !in unavailable }) {
+            for (query in group) {
                 currentCoroutineContext().ensureActive()
                 onAttempt(source, query)
                 val items = try {
@@ -71,6 +76,7 @@ internal class AniSearch(
                 } catch (e: Exception) {
                     currentCoroutineContext().ensureActive()
                     attempts.add(AniSearchAttempt(source, query, error = e.message ?: e.javaClass.simpleName))
+                    unavailable.add(source.id)
                     // Transport/parse errors are independent of the keyword; try the next source.
                     break
                 }
