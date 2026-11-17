@@ -15,6 +15,7 @@ import kotlinx.coroutines.*
 
 internal class AniTvPage(private val activity: MainActivity, private val exit: () -> Unit) {
     private val repository = AniRepository(activity)
+    private val searcher = AniSearch(repository::search)
     private val discover = AniDiscoverRepository(activity)
     private var sources = emptyList<AniSource>()
     private var source: AniSource? = null
@@ -40,6 +41,8 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
     private var pickerReturn = "search"
     private var searched = false
     private var lastSearch = ""
+    private var searchHistory = ""
+    private var focusSearchResult = false
     private var retry: (() -> Unit)? = null
     private val focus = mutableMapOf<String, Int>()
     private var controls = emptyList<View>()
@@ -101,7 +104,7 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
         render()
     }
     private fun openSearch(from: String, title: String = keyword) {
-        searchReturn = from; keyword = title; results = emptyList(); searched = false; lastSearch = ""; page = "search"; focus[page] = 0
+        searchReturn = from; keyword = title; results = emptyList(); searched = false; lastSearch = ""; searchHistory = ""; page = "search"; focus[page] = 0
         work("读取已启用 Ani 源") { loadSources() }
         // 自动搜索由独立按钮触发，避免加载源与搜索并发。
     }
@@ -109,22 +112,38 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
         if (keyword.isBlank()) { message = "请先输入番剧关键词"; render(); return }
         val selected = source
         if (selected == null || !repository.enabled(selected)) { message = "尚未选择可用 Ani 源，请选择源或到源管理导入订阅"; render(); return }
-        val query = keyword.trim(); results = emptyList(); searched = false; lastSearch = "${selected.name} ·「$query」"
+        val query = keyword.trim(); results = emptyList(); searched = false; searchHistory = ""; lastSearch = "${selected.name} ·「$query」"
         work("正在搜索 $lastSearch") {
-            results = repository.search(selected, query); searched = true
-            focus["search"] = if (results.isEmpty()) 1 else 7
+            performSearch(selected, query, false)
         }
+    }
+    private suspend fun performSearch(selected: AniSource, query: String, shortFirst: Boolean) {
+        val outcome = searcher.find(sources.filter { repository.enabled(it) }, selected, query, shortFirst) { entry, word ->
+            lastSearch = "${entry.name} ·「$word」"
+            message = "正在搜索 $lastSearch；无结果将尝试短词与备用源，返回可取消"
+            render()
+        }
+        results = outcome.items
+        outcome.source?.let { matched ->
+            source = matched; repository.select(matched)
+            lastSearch = "${matched.name} ·「${outcome.keyword}」"
+        }
+        searchHistory = outcome.attempts.joinToString("\n") { attempt ->
+            "${attempt.source.name} ·「${attempt.keyword}」：${attempt.error?.let { "失败（$it）" } ?: "${attempt.count} 条"}"
+        }
+        searched = true
+        focusSearchResult = results.isNotEmpty()
+        focus["search"] = 1
     }
     private fun searchMetadata() {
         val item = metadata ?: return
-        searchReturn = "metadata"; keyword = item.searchTitle(false); results = emptyList(); searched = false
+        searchReturn = "metadata"; keyword = item.searchTitle(false); results = emptyList(); searched = false; searchHistory = ""
         page = "search"; focus[page] = 0
         work("用片名在所选 Ani 源搜索") {
             loadSources()
             val selected = source ?: error("没有已启用的受支持 Ani 源；请到源管理导入或启用")
             require(keyword.isNotBlank()) { "条目没有可搜索片名，请编辑关键词" }
-            val query = keyword.trim(); lastSearch = "${selected.name} ·「$query」"
-            results = repository.search(selected, query); searched = true
+            performSearch(selected, keyword.trim(), true)
         }
     }
     private fun render() {
@@ -287,15 +306,28 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
             }
             "search" -> {
                 val editor = input(keyword, "输入番剧关键词，确认打开键盘") { keyword = it }
-                editor.setOnEditorActionListener { _, _, _ -> (activity.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager).hideSoftInputFromWindow(editor.windowToken, 0); search(); true }
+                editor.setOnEditorActionListener { _, _, _ ->
+                    runCatching {
+                        (activity.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager)
+                            ?.hideSoftInputFromWindow(editor.windowToken, 0)
+                    }
+                    search(); true
+                }
                 button("搜索 · ${source?.name ?: "请先选择源"}") { search() }
                 button("换源（仅已启用受支持的 Ani 源）") { pickerReturn = "search"; page = "picker"; work("读取已启用源") { loadSources() } }
                 button("使用中文名") { metadata?.let { keyword = it.searchTitle(false) }; render() }
                 button("使用原名") { metadata?.let { keyword = it.searchTitle(true) }; render() }
                 button("源管理 / 导入订阅") { page = "sources"; work("读取订阅") { loadSources() } }
                 button("返回") { back() }
-                text("当前源：${source?.name ?: "未选择"}；关键词：「$keyword」。每次只请求所选源，不自动扫站。", target = list)
-                if (searched) text(if (results.isEmpty()) "当前源 $lastSearch 返回 0 条。只代表本次此源未匹配；可换源、换中文/原名、缩短关键词或返回。不能据此判断全网无资源。" else "本次 $lastSearch 返回 ${results.size} 条（最多500条）；请选择匹配条目。", target = list)
+                text("当前源：${source?.name ?: "未选择"}；关键词：「$keyword」。手动搜索先用原词；详情搜索优先短词。无结果按顺序重试，最多 ${AniSearch.MAX_SOURCES} 个已启用受支持源、每源2个词，返回可取消。", target = list)
+                if (searched) {
+                    text(if (results.isEmpty()) "本轮未找到匹配条目，具体空结果或错误见下方记录；不表示全网无资源。可编辑关键词或手动换源。" else "本次 $lastSearch 返回 ${results.size} 条（最多500条）；请选择匹配条目并核对季数。", target = list)
+                    text(searchHistory, 20f, list)
+                }
+                if (focusSearchResult && results.isNotEmpty()) {
+                    focus["search"] = views.size
+                    focusSearchResult = false
+                }
                 results.forEach { item -> button(item.name) {
                     subject = item
                     work("获取当前源详情与选集") { episodes = repository.episodes(source ?: error("请重新选源"), item); require(episodes.isNotEmpty()) { "当前源未解析出剧集，请返回换源或重试；不支持动态脚本/验证页面" }; page = "episodes"; focus[page] = 0 }
@@ -325,7 +357,7 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                 button("返回发现首页") { back() }
                 button("搜索番剧") { openSearch("discover") }
                 button("源管理") { page = "sources"; work("读取订阅") { loadSources() } }
-                text("1. 发现首页默认显示当季首月放送的番剧，可切换本季三个月、每日放送与番剧榜，并加载更多。\n2. 番剧资料来自 AniList 公开接口，国内可直接连接、不需要代理；B站番剧索引已长期停更，故不再作为新番来源。\n3. 选择条目查看名称、更新与评分，再点“搜索资源”；只搜当前已启用 Ani 源。\n4. 初次使用请到源管理导入公开默认订阅或可信 Ani 订阅，选择并启用源。订阅/源不是番剧目录，CMS 与 Jellyfin 保持独立入口。\n5. 无结果先核对当前源和关键词，尝试中文名、原名、短标题或换源，再搜索；不表示全网没有。\n6. 方向键移动并滚动，确认选择；输入框按确认打开输入法，完成/搜索提交，返回先关闭键盘，再返回上级。请求中可取消。\n7. 当季按季度筛选，含连载与未开播，不是“今天上线”；放送表按北京时间归集；榜单是 AniList 评分排序，不是实时播放量。\n8. 本机缓存1小时，联网失败会显示上次结果的采集时间；元数据不保证源有资源；不要求 AppID。\n9. 仅支持 Ani Selector 静态子集；不执行 JS，不绕登录、验证码、付费限制或 DRM。播放保持现有 SurfaceView 链路。", 19f, list)
+                text("1. 发现首页默认显示当季首月放送的番剧，可切换本季三个月、每日放送与番剧榜，并加载更多。\n2. 番剧资料来自 AniList 公开接口，国内可直接连接、不需要代理；B站番剧索引已长期停更，故不再作为新番来源。\n3. 选择条目查看名称、更新与评分，再点“搜索资源”；优先用短片名搜索，未命中再尝试完整片名与备用源。\n4. 初次使用请到源管理导入公开默认订阅或可信 Ani 订阅，选择并启用源。订阅/源不是番剧目录，CMS 与 Jellyfin 保持独立入口。\n5. 手动搜索先用输入原词。每次最多尝试3个已启用受支持源，每源最多2个词；结果显示实际源、关键词和失败原因。请核对番名与季数；未找到不表示全网没有。\n6. 方向键移动并滚动，确认选择；输入框按确认打开输入法，完成/搜索提交，返回先关闭键盘，再返回上级。请求中可取消。\n7. 当季按季度筛选，含连载与未开播，不是“今天上线”；放送表按北京时间归集；榜单是 AniList 评分排序，不是实时播放量。\n8. 本机缓存1小时，联网失败会显示上次结果的采集时间；元数据不保证源有资源；不要求 AppID。\n9. 仅支持 Ani Selector 静态子集；不执行 JS，不绕登录、验证码、付费限制或 DRM。播放保持现有 SurfaceView 链路。", 19f, list)
             }
             "episodes" -> {
                 button("返回搜索结果") { back() }
