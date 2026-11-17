@@ -1,0 +1,27 @@
+{
+  "/v0/subjects?type=2&sort=date&year=2026&month=10&limit=20&offset=0": {
+    "file": "6dae4ee9e3ed35ec38ce5bc9deefc01f89a92511fc2a143730ad4a053ab2bbc0.json",
+    "capturedAt": "2026-11-15T14:50:08.144613+00:00",
+    "sha256": "f3a55b94591e0734969adc0ced9bd1b4acab0b9d1718be813a7b56fc007dbd8d"
+  },
+  "/v0/subjects?type=2&sort=date&year=2026&month=11&limit=20&offset=0": {
+    "file": "87ed6519f3f48a6c89e812e4453a84d9d751438501a49f594a71dcd5188a8c5b.json",
+    "capturedAt": "2026-11-15T14:50:11.711108+00:00",
+    "sha256": "b0fe753c3ecf97197a2556d774dd8e35d2ec94fe706a515631384e85a9d60644"
+  },
+  "/v0/subjects?type=2&sort=date&year=2026&month=12&limit=20&offset=0": {
+    "file": "d87b7a469a8f0786cacad7cf929db7d107dc1ba996e38786abcf4386f93df135.json",
+    "capturedAt": "2026-11-15T14:50:15.586979+00:00",
+    "sha256": "6506ec7c1f236f1f39f8ad64bbbd87b3ce147b9dd9fefd69ad5859f915bdbb20"
+  },
+  "/v0/subjects?type=2&sort=rank&limit=20&offset=0": {
+    "file": "fd8c3f7fbd9cd3620eec3c05c886fde7fdd031bd21b8bfe3cbdf6b5b51b9b9eb.json",
+    "capturedAt": "2026-11-15T14:50:18.891073+00:00",
+    "sha256": "e3c3b9bf44e57c32a17d9c29902b9ab982bdac13afe958f002d531d7e0cb9cea"
+  },
+  "/calendar": {
+    "file": "df61c8d0ffcc8c763cfdffee4b9278826ed90a6ef2c1741fefd18c771673bdee.json",
+    "capturedAt": "2026-11-15T14:50:19.956441+00:00",
+    "sha256": "9c3c2ae3079862ce35837f161e7f819c15aa19e36afb7e30e673f050db404fab"
+  }
+}

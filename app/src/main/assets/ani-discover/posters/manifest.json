@@ -1,0 +1,565 @@
+{
+  "notice": "构建时经电脑既有代理采集的真实封面快照，不代表电视联网成功",
+  "items": [
+    {
+      "subjectId": 665014,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/74/5e/665014_YbeJ2.jpg",
+      "file": "efafe828d7737b0534326ffee7c673b0073076a40318e5dffb0fbeaa25dd2b6d.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "f4a5e7ca416e9cd8ea9718183831a45a2c288882d928d367b3c3b5a78e4bcc50",
+      "sha256": "b4c9b2f48e8528f498e39cde0f8ad168b722cbc90ca7da29e130a67d121c3940"
+    },
+    {
+      "subjectId": 712500,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/bb/77/712500_Ene6m.jpg",
+      "file": "6bab55b919bfd8ea23afae53de3afaf2f1feed562d3814bb771ac1c01ff96d54.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "224094ba75c87c01300231b62a9a2f150cf7b97585c126a1e4f8d6f395305d5d",
+      "sha256": "eb3c006859b44169843a258e21c151e2f24329b19535faeb4fbe11b8fcac1cc6"
+    },
+    {
+      "subjectId": 717907,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/ac/b8/717907_zIFiJ.jpg",
+      "file": "7940244031acb972e47e529bcd3e686e836687d28862e527dce1de2d4c346b66.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "a44c28e7b480d1173b49ac4a36f4e16e8e2e7c323a746d7f4a25050708276a29",
+      "sha256": "a78442d668a923d36166788c4270a284fe15f08beb45633abe845ec8a43ba39d"
+    },
+    {
+      "subjectId": 473417,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/f8/de/473417_3WE23.jpg",
+      "file": "52984e07d64e37af1423ef30640116529ee4bc6a5fabe493dcea732c86c153ec.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "32da033d8421d796be98ab5b41db1a877e4ea150add35bddbef52c8e828fce6b",
+      "sha256": "6ea778cff128cfa8f7e27bcdb838b1204c4b97baec67e7a7d42272179ed3ed2b"
+    },
+    {
+      "subjectId": 593863,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/86/cd/593863_7u0XX.jpg",
+      "file": "bd5642fc4614e82bcc0cb140f6075e3f7b19155b373bd91ff74ea5a0f6900418.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "28783c9d245fddd31b2c88ad51348b3519b1f5b40aad94a2996b7e570f2acd02",
+      "sha256": "098e484438ac5966a9556f0c3d9036c19b668657679c3b70e7bcde18ba75a6c0"
+    },
+    {
+      "subjectId": 717351,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/28/83/717351_z6OY9.jpg",
+      "file": "6bc095dfcce586c9ef9053fb48203033aabdcd570832b939fc80805d6ec5a9e3.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "e0ed963f4ca8a1218f3d97d8fdde31dcece41675412f66bd9173a977421b5740",
+      "sha256": "3881df0687bdc09191e69c32b7a719385cbe1fc8d1e3509417218efbe3d0736a"
+    },
+    {
+      "subjectId": 715233,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/b1/5d/715233_E9Z2Z.jpg",
+      "file": "f58fad6fb74fb65251cdd3775ba9ecb9b3ee42247e850edd1cc501b0285cbcd3.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "fc3dd0cb82f4331cec5bc151ec440eb508e75658ccf6151b30af367a9bd17c17",
+      "sha256": "a9d9f4867f6ef2bdde4f687414d6c05916f2255fcc456630a5e52cc0096e8ac4"
+    },
+    {
+      "subjectId": 715528,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/71/61/715528_V1Oil.jpg",
+      "file": "faaa8b4bd38acb0cc706598122d92e85fc7e776d881e35676d8badeda5588d1c.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "d82b43b992f1439b2272ba1bffc1bc610e041feb417c2709f780ee39da338dee",
+      "sha256": "9845c9683cdc8a44f0a4e5799cade0165407356cca1c733011d23b1ee39f1af7"
+    },
+    {
+      "subjectId": 716998,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/81/3d/716998_h7kKz.jpg",
+      "file": "47e0f5df438c6957b1e877dfad48a1e5f37ea5d6f609bba6f40d1c96de38f48d.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "ac0a2332718032b6632dd8073d7697bc0e72146078ef64df2e99debe7adca35b",
+      "sha256": "99f42ef4c4783173c067006b48e4813e0e9f4a9838a01bdd64c3a3de68c609c1"
+    },
+    {
+      "subjectId": 716367,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/97/3a/716367_cx1FD.jpg",
+      "file": "77f5760546a9a6158df54aa5df650d1a8ff539930760eb57d75c820d138ff2e2.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "f369078b7f56c3950039bcb1ab5da442656437b4db0c84cfc2c9762addc6d6db",
+      "sha256": "36035c753ba3ee3dc0aa66dd2b6744826c7338ccc1e4a171f6d2045ce08817ff"
+    },
+    {
+      "subjectId": 551304,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/ac/40/551304_FbmZ9.jpg",
+      "file": "a2356d06a808ccc81a5e1bdc21ff001ebf15c472b9572a897b5e7cae4fc9b6d6.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "23d3c4ca1fe0b160715fa3cb94c8254796eb315e5c0d08d9a3e155e56afc67d2",
+      "sha256": "40fd7c53f3d6d297e0ad108c2b8c1ad25d32d58176715c61fc5c8c60e09dba83"
+    },
+    {
+      "subjectId": 715907,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/b4/fc/715907_1Llil.jpg",
+      "file": "15ced5e6cbb4bde8324ffe86c24b8b56afe555af3eb6db4e0c86b88caf07ff00.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "665c96437cc4e8dba801d741e779c61ef7efeb2ce8d689f2108a817434549a3d",
+      "sha256": "efafcc3a6260ad925d962cfc6bcd78f38c0c2eea2c0b6d5041e99a452b39f69d"
+    },
+    {
+      "subjectId": 349497,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/48/be/349497_9v1WO.jpg",
+      "file": "c78a8ab322ac9558d9fe196cfa09e7ba50594b5b954b30653d2451b995703c80.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "cd62d1244edf4f34210991a0217a3b105b54693ea37c1d3f2e4c32198905c85c",
+      "sha256": "ac57eee3dedb5b5435e7877ae4b2f244153a7cc4270b5d82f54d6edc59e31b28"
+    },
+    {
+      "subjectId": 415482,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/cf/80/415482_g8Xsr.jpg",
+      "file": "a89cdcb4680a28a284b081e3794b9d691852d3323a06e44e9947f40aadef7a62.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "c13072bab1a56c3ecbab0662362ecced11c2db73ce7504a3d9085930d050a419",
+      "sha256": "4158ade2bdfe55c2047bc6466448055664d77cbbe2d6949875a65b7f59e1850e"
+    },
+    {
+      "subjectId": 583008,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/e5/23/583008_yYZIG.jpg",
+      "file": "3fc29bb8eb1d7fe5d27e61d15901d9ecb75a643b34392d2ce1061c53d1588f4c.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "a703790853f4488c91222948331ecfc809c3526a6153e85f2c3f17b308b100bd",
+      "sha256": "a090ab1a6267db5a174e1580cb6c93f0e7944597e0dbaf82074bac64693e4fda"
+    },
+    {
+      "subjectId": 636680,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/57/b8/636680_qMNrN.jpg",
+      "file": "29fef18901e1b3f2c6b1ff3d5faad73bf8ad255732029516b7d3e23c4501da9f.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "f354749d674b1b3a2bc210768f74f3649be793d65874b27f92aad29e256eda98",
+      "sha256": "12ccca12dd4c2853f3405593a856eadfbf2344b22350ef0adf6f253a8ef6c8ab"
+    },
+    {
+      "subjectId": 711604,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/71/c1/711604_oaaOf.jpg",
+      "file": "bec6bb2e59235204024a717e98abee0fe270cd381e14c6c9a09b19c8e71464b7.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "49ecfb80412bbe9462a9f0d3cb310a92ca8fc3543085aac0eed8805802b3802e",
+      "sha256": "65397da9d67d638ca5fdbb5757611a4151b5a61ce31971fedf30cb5865fc7c3b"
+    },
+    {
+      "subjectId": 715413,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/fe/26/715413_08MNX.jpg",
+      "file": "b9626ad01720a1c5382609fc13183969cfcd5e393b00cb71ee2af767359a523d.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "8d7fa01639ca035d196edcdda0b34fb90aab3b3ff895f702ea590da0e2bf20b1",
+      "sha256": "fc597e9f358574ee752a58c18c7507eaecd83d9ac7966a01c477a80f936503c4"
+    },
+    {
+      "subjectId": 663646,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/ee/92/663646_K2cIb.jpg",
+      "file": "3087a4f1d492ddeadfc84ca7c062ceccb31b8583931c8d51c24b75dd14b72d3c.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "4abc621d493e20b731533adfd692d5580d035ea89fbc69772d04500de0f9107d",
+      "sha256": "857998a524bae2af679b61cba958c33e73410ab1576b80ffcefc1f7ddccbb409"
+    },
+    {
+      "subjectId": 709475,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/6f/24/709475_zpW8A.jpg",
+      "file": "462ef176e9a220f77d5b0bc4950f3137303f368ee2358bc5ccb2f4f7b72fa2b3.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "24ceefa9c71c9dd108ac19ae66f8df14c5f37b4293cc8e5040b9590d3ae32ff8",
+      "sha256": "dd53297e07f155491f8355328edf9c85f71f028070446af83f0105ff6ac45263"
+    },
+    {
+      "subjectId": 576733,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/b8/bd/576733_Dgzds.jpg",
+      "file": "3b72f374cf16b30836cefa863927bddc2fa3bd16e0658883bfa3b7b8d1bdc061.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "dd4680645a9cd8dee15166e13c05174095cd6374621f2648e50a36b7fc483623",
+      "sha256": "7fe21c9e493c99c3250718c96c2d348907e48ccc336ca044c3e36cb5551ee65a"
+    },
+    {
+      "subjectId": 654672,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/6a/1b/654672_9NZ43.jpg",
+      "file": "b1fcf8926491bdc71b134337d00ae0b1350aa3a8198d7f77cadb889cfe921e99.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "6492055ce392e00e5e2294c20def43e524ab4e395776fc1d72190ef0a9934edc",
+      "sha256": "fdf7468ecb79a668dcf661b8f6ac5073326ef513992314ef0edc3a074db065db"
+    },
+    {
+      "subjectId": 661692,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/dc/ac/663129_e8E81.jpg",
+      "file": "b65abcbe64f0934c85182c6522e0ee99c4e805833c9ebbdb1e3ec76db0def5ca.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "0d141c70222096f40741e09d64056270e16ff9d7f4a84d908317db8e41bb3934",
+      "sha256": "389221dbda41aa9d36917d90a2f7e7afecc8b70fee136c799761e88ef52e0746"
+    },
+    {
+      "subjectId": 583786,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/7e/0d/583786_496N1.jpg",
+      "file": "a303f9983b2a58a8b42715c2245e2faf6abe6615bd83ab4cd73594235160c50c.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "134dac3c9932f60457e129d222639a5ffdaa04a047f070b91a22cf7b8ccbfe47",
+      "sha256": "0a4dbcdb44423fd056939c0c07837fa8266327d5df72722bc1f1e88673762747"
+    },
+    {
+      "subjectId": 664308,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/31/f3/664308_j80W7.jpg",
+      "file": "50229c909579400610f96d84c2012c8ae4610ee8141cec805bc3c0c881d691e0.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "df9c2e48831176379da3587a78042d9973ff933c3c70f9a06d5ccd674967844a",
+      "sha256": "119c2941733c5e6b4a08e675450b3d0e88aa2345db1087afc3926a304eefa43e"
+    },
+    {
+      "subjectId": 576968,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/db/6b/576968_s0ddA.jpg",
+      "file": "89614ceb0ac6baa9e434e1f44c48c9edac8b0a7011741a1bf0bd36bdcd087ed6.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "345c5618d5c08c441233ed6d746877deef20c9ed3ba28735950cba7a4e732a23",
+      "sha256": "a009e519aa80b4d2bbdd4fc3a8eb222fbf99ca0126f4de854eb209f975179b2f"
+    },
+    {
+      "subjectId": 362551,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/6d/5b/362551_9XG3g.jpg",
+      "file": "7c3d862f5f40e6f1564d57d1a6c57611426fb480c4ae3a3cc5f016ba37fb1bbc.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "b532ad15bdbf066f73ab70ed7b376c703e98512121684b9fac1d1d0384ceb141",
+      "sha256": "f920b354a36c748d521a97523f61621c5a7981c59cd758385219fab2428bfc9f"
+    },
+    {
+      "subjectId": 621555,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/e8/bb/621555_54OUt.jpg",
+      "file": "e9f0dccfeaa0becb868519b030d4c9326c17a468dc15621bb8185a16c02a0b1a.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "664606c6b8b0625dac84fd696782443aeaafd87b61ceb91ad124fe4b43f12be6",
+      "sha256": "c01d9ee92749d9cdb684cff9ece5debaeaa3204ada1b4e462a99cfac9f5314ac"
+    },
+    {
+      "subjectId": 663447,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/c6/ac/663447_unQNe.jpg",
+      "file": "20c1af51f4a055557bc6ec1f110f931648e8e260f567a1f0ce9f55967a4aa9fb.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "965df98de26bc382acd220a9c49e854372445974b794770e13c249cb922ba58c",
+      "sha256": "069167269020921990f4ce6a7d3e4a779c711340a2756d4e97a1024b4e02ba1b"
+    },
+    {
+      "subjectId": 716617,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/5c/d7/716617_sQEpb.jpg",
+      "file": "98083438eb19e71811767df7371c91be04baae8e7818727ea38fcb3f998f6194.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "b8f5d7df65edc9fca928f4472a3268d429d037f5b27ca8c7e0ac52d697a0ff67",
+      "sha256": "aefd81cdb4382a04c5564b30e3c9ffb578287612afad5f26057c66bc846691ea"
+    },
+    {
+      "subjectId": 662691,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/20/c8/662691_aFr7O.jpg",
+      "file": "58ba799b4357293dc0784d0d701b8f9eaad27e3e6e776a5fc5fafc3fd716ab66.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "389bec96cce8a448bc7eea80c6112d3630127d5cf2afd5ba1fd3084a93847342",
+      "sha256": "f303409c885bbefa3aaf4d82df2b23d12fddd46a0f4a15fcbb8b42a24685b83f"
+    },
+    {
+      "subjectId": 632678,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/5f/58/632678_6ToI6.jpg",
+      "file": "dc862865fc5ab2284c900a08f6c1a1714dfa91aa048b9859578d26a080ebc69c.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "2465ec54455765c5e35b68ad9246a52021acdf86afe6c28e3963537bf9fcdce1",
+      "sha256": "943465205d7e1056b68328a2f0e392a5e9ed52e3a33fc929147695a591ef7470"
+    },
+    {
+      "subjectId": 709316,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/57/29/709316_mUZBt.jpg",
+      "file": "c60ead398b59a38fe979eb48b98e8a9ef559754826b6958ee50951913c7ad139.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "da462c78338e59137125adca06668364f28f7c6773007c5b34484e0185ba6ccd",
+      "sha256": "4cf484dffa989fee34dc8c58440928073c7bf94011f0e411bbe762aa9d5e08f2"
+    },
+    {
+      "subjectId": 477456,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/a4/03/477456_3bU8g.jpg",
+      "file": "4c3a772e2c95af45894c020aa8737e5e576f9c7059992ddacd4824b978185445.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "e58a57292154afc81a18d3a3a4aff615089ec99282a35c9029a5aa8af46b4146",
+      "sha256": "ac1f1f07089c856300ed192d0d0a52bbae8a36d9a91d64cb23a39fbb5d03e99b"
+    },
+    {
+      "subjectId": 720123,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/1b/d5/720123_OFi3B.jpg",
+      "file": "a49a9a21228d15c18100d9a3c62ebd7850a311204946262438a5809222d9d670.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "863cc7c5631974fdfc2ff979719d64e91ecac8f26c7082c8cdecde9111ffbbfc",
+      "sha256": "88fee4d55fbf628775d26a1cf160676376df194741fe85be005237e7fb1c17c1"
+    },
+    {
+      "subjectId": 720342,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/dd/3c/720342_4XbDf.jpg",
+      "file": "4b77f0ab2fe5ae6c0aabff03ee2c83b4e82db1af81d5594c1bca35acd190c040.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "d79c154d0f03913e96f322e2529ed6fa9f59cb69c522ba9b754d03a713239295",
+      "sha256": "635a733f2c90e1a5f4483fea1859e64775c51e33f2968300cf90d60be1f32768"
+    },
+    {
+      "subjectId": 665756,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/e9/e6/665756_8l10D.jpg",
+      "file": "bb0ae9a8f832cabaff04cd15725f792a16ae01a18577b13dfb59fb220598b506.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "0c61ee031922cef425dac622e64f1a944e1f40bdf856b4e8a90a6a12273d6217",
+      "sha256": "99fc63c443195dd986d3955f6a831db822c7546ca587f7ade62575893623d61c"
+    },
+    {
+      "subjectId": 640765,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/34/f8/640765_IRR1M.jpg",
+      "file": "b5eb641e60a715da0c833a13b8f773568a72ccc66c28c8c25ca69c9be235c76a.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "caf78e2b4001d59afa92e1a5c631350f3c2b0c52fdd188a97ba77a99160385fa",
+      "sha256": "5f5e94788cc74598797b3a728ac698665109dd20a52970430e96bf974085ecc9"
+    },
+    {
+      "subjectId": 483867,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/f3/f0/483867_oUGeS.jpg",
+      "file": "de0201d3441da3d6fafdfc512f4d41bfbd18b63c08a64ac57940d3f632e7d64f.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "81ca3b4398f05b9d941c9644636c789b66b75cedbcb695f41a4bad096718de2b",
+      "sha256": "ece7910eef5aa5153f03d4ef3e2f5a6c6f367f8313c5c9f47ef26468c443901c"
+    },
+    {
+      "subjectId": 502499,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/f4/fc/502499_oxoci.jpg",
+      "file": "505f8c4cdabc5a4f1bd05e630a75a694320bd31ac8439213f2ece46439641cb8.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "96c274bb83400a2ff5b5319eab1da9ce28d2d0bd3f81aa7e9a686071bdceeb13",
+      "sha256": "22d5acdda4b016e22bce1c9d2b90994443337773fef46c3938ae6a3dfda263ed"
+    },
+    {
+      "subjectId": 564202,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/e3/60/564202_X8Xrq.jpg",
+      "file": "b04f469e9386da611ec713d05fb4ee2ed890c33592e217bff19d893b79ae4eff.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "e3ac5e42be6751652512fae0e3797f77fe84ad683756eb653819287f6aa17dd2",
+      "sha256": "a0cbd211eafb8f88a928c7d90d4a06e174632745642ccf72bb554eae7c438928"
+    },
+    {
+      "subjectId": 499105,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/88/0d/499105_7LuQ7.jpg",
+      "file": "8a001a6cfa815cc38be75f38f274d917cd43cc3cdae953a5053ef42c2af1ad92.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "6de03730b70cfbb4d3c5cd9a77ad2d28dcef09c7104fe5028837c673e83df164",
+      "sha256": "8ef622b2df090dbea73b924b31f4b7efca2a366024a0e2720b5bd81ee5891838"
+    },
+    {
+      "subjectId": 524988,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/e5/ba/524988_9g34i.jpg",
+      "file": "223f7fecd71c0d350988c79d5948d7415ee6525f1e2803bc320cd38091433629.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "4a8ecad509f1c1ae1a53598e4122a5ae380795f4b9e06d98c9e3ed074fe89ebc",
+      "sha256": "bb08214555075dd5325e61b66ff38d805b5788e5256e1fdbc809820f56baa206"
+    },
+    {
+      "subjectId": 663442,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/b9/5c/663442_44HLG.jpg",
+      "file": "c01db281860402edbe8b2ec4e437d253d562256c7e2f85e85c4b1b6a6b10484f.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "755ae9f65c9c96f0accd4b394372d37e750eae6834aca3d7251197d5dfc01573",
+      "sha256": "0c1c5824ee8dff93ee8215334f39a2ece8e9cd2ff37c7e77d710d9776a8404b7"
+    },
+    {
+      "subjectId": 461585,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/a5/4a/461585_xZJ2J.jpg",
+      "file": "e469d9f06f87902b3070cdd7871dd846afa4b09fd7abcf7794c5ebe802010f6b.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "1b29e7cdd6b5d1d5ca111e68b2978e74fef9971e00c8ad6f520472b469794615",
+      "sha256": "50d9d3e7747bd3ef2e9daf5f34c38fabdde78734ae259b4dd72726c62588a1ae"
+    },
+    {
+      "subjectId": 564192,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/92/97/564192_7FFjw.jpg",
+      "file": "21711be1298b762cafc3b5b0d124c78deb356047bc9f9c70eb2e1e07382e2830.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "2b465014d98e49e83bd17cb10da238f62f0a2ae7675c56b4eae67ce0e9f15fac",
+      "sha256": "0ef8b1f09858da41307058f038f717812b31a7e1e32d8fc08f593eabf07d82a4"
+    },
+    {
+      "subjectId": 695770,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/88/f9/695770_361T3.jpg",
+      "file": "9e9be1b3d5dbd1a47d3c9304b5d88702bed67c3f12cefc13a8cd4022bff71866.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "b7b03fb877c77539e63d4909fa3a3706e1c7609a3fd524a839734832ebc67db7",
+      "sha256": "7593fe28cd5e794bdbc6fba1a14d71bbda26eb8b1e9590f997a926ef2e29b919"
+    },
+    {
+      "subjectId": 516076,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/15/95/516076_3PIei.jpg",
+      "file": "702a55e87488bc5f1c368506d0c103da6869230f5d9a80c09f8d189c96baa9c4.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "9ae9b6f2e70690bf87d3de1020aaf6a5e0f4e021af702d4e5818cf1c18a08e7e",
+      "sha256": "0e165549ab9d79ce6dc1a37a53496250cf665dbcc3c54963eeea06c7a8095292"
+    },
+    {
+      "subjectId": 599894,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/10/3f/599894_rl3rr.jpg",
+      "file": "51957b56e9cc1706e34fdfdf437cdcb336d3f1e6a21da9c0c962bca56b37ae82.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "456a0b90a6d500910d3f48f5195d9f8a23d3374bfdd24178ecf736518724fd26",
+      "sha256": "73c4cb25c6d9314d2735b0f0f3ac8f3c4e21c6691bd44104196b3136fb717d98"
+    },
+    {
+      "subjectId": 718694,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/a6/a8/718694_r8r4g.jpg",
+      "file": "93f02511c26a2b333b5300efab5469fd21ccc9943eae87433bedb96d06b05554.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "836e51cc69627b40e046a62eaea0162f93f45a7347f053f676ce28d9d32de940",
+      "sha256": "8b7f9f3a4505f05183c254487c386d067995ca3ecbf6df4062d1ad6a0e39d971"
+    },
+    {
+      "subjectId": 326,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/a6/66/326_D8wjw.jpg",
+      "file": "5ffb15ddd30208693f6ec3d1855615af227f696eec88dd626653843111efb69f.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "046a0d6b64d82c8f436a8049e020f26bbe07bc3853b8d7314bc7a7ba8a884fb9",
+      "sha256": "48581f199be965976084920e70a17d10d5637a904402221d6df577f7fe589e9e"
+    },
+    {
+      "subjectId": 876,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/67/d1/876_dCfrd.jpg",
+      "file": "882a694cd8a3600960ce4a3e1d75e8771f0100a0c3f9ef98ed4eeb0db8c4adec.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "a41973543ac079604ed4c057379cc1452a1d3516287c52cb1ea4bad817878074",
+      "sha256": "cbbe5f1e74ae5c6595fa1a467a0925307cdce1ceded667a3be6187d29647ea64"
+    },
+    {
+      "subjectId": 25961,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/fd/60/25961_WDKz6.jpg",
+      "file": "9475f094ca803a9eb50baba9afada7711b96ca62e9d26728ea28847073369fe1.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "604393ffc0505cbdb938d09ebde76ae0ba43748df72bb688a188c6eee764e7e1",
+      "sha256": "ed259f99b2a437c2de5b3d2a1814408883d477d4d72aa54ee092657cd5431c05"
+    },
+    {
+      "subjectId": 253,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/c2/4c/253_jJJj9.jpg",
+      "file": "736d9c298cf82ea7b0cd7b90073b94b62e55ef942e5ea33d440c8eced1bd5677.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "06f2e40ae55522bef78afee98989aceb135b9204df9b2bb01b0ca2389027d470",
+      "sha256": "56c34a33c878391b61c4384017e4e1e1917f09a49de27e88862d195bc9b208c1"
+    },
+    {
+      "subjectId": 324,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/f2/fc/324_psuXk.jpg",
+      "file": "71a59e709ae2bf7094b0016461732690abd19cf0f33837dd243eed67a2221634.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "d18dce2d429e57da67a4e9bd0610ca9b9f89915111982aafef2b37873efd3a90",
+      "sha256": "06fd5ceb4c59dd61182d0c2d9e9d10a9056a423ed97ed0d822ed006a012587b4"
+    },
+    {
+      "subjectId": 1728,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/71/37/1728_HLsCr.jpg",
+      "file": "c2be7a3fad93aa6b0e6d616b54928c0ef772bad063765f4ff5c02604dabc3937.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "b938edb52c943a9bde08a87980018d75d32a35064599b7b70acd073bc5c0b522",
+      "sha256": "f27e707027817c0203daf7c3025b86a03d5058a30b6ca9246a0e55c796564b8c"
+    },
+    {
+      "subjectId": 10380,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/a9/79/10380_YwP4R.jpg",
+      "file": "e0ba5bfc8fc67f9dacb8a72c4bec8c5f248401886f129e65ad59de199aad80c7.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "9928de826c08125857da34475e508cc9ea16fdfbb7b692fcac0dc32f1768f1b9",
+      "sha256": "3348313e5e7722e39f60fa827ca595031ea14261c8cfc369f30aca0a7aecc606"
+    },
+    {
+      "subjectId": 6049,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/fe/45/6049_zy52O.jpg",
+      "file": "add299ad985f3ce9faf736331836252d3989d066d43b5bf5986536366091677b.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "cd4a817f74aeb01c40371c400c502cc8033968b622cb6cee1fddb4bd67f62603",
+      "sha256": "29affd530ecdd7e0df46a900273a2b8d37b133a2fa59fb4ccc0699e2594a1b1e"
+    },
+    {
+      "subjectId": 237,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/53/9f/237_78UdL.jpg",
+      "file": "2ae6581d8ddc9a360dd5c8e1da2354a3d766fd81f2f349ce76efe7f507f30bb2.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "dd78bb9c3f83096ed297f9ea9ac9c40818f8101e304779bdd70014f2a58f6c0e",
+      "sha256": "bcc144bb1ea49303d1238439f848ae32d44ffb3a722a0069f5bdea889a33a122"
+    },
+    {
+      "subjectId": 211567,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/5c/49/211567_pGm5Q.jpg",
+      "file": "93ac272bcacea6b7d9fb66c187ceb82575628bbb4124707e96d926e556a2316e.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "032977da03eeea7d242fc73396855909b9cae6801f6b235071f4840f06443b3e",
+      "sha256": "74674aad66fb908e765d24365c1371a9e890731f060aa39cf667f6df2fda6ee6"
+    },
+    {
+      "subjectId": 321,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/ca/f1/321_j3YWy.jpg",
+      "file": "0a850c8b038ec0fb3bdd6c37fe2a50b436655c17f15a2001978b529e076d0a27.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "6a4800e2481634df966f9b66b714a2e9c3626e28f1a04982cfd3344e23366d5f",
+      "sha256": "a0f6626abf4b7ab5d390fb98936fb19c6fd633478f8b35c565693072554caa3f"
+    },
+    {
+      "subjectId": 1428,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/06/63/1428_xwkMI.jpg",
+      "file": "a5486cf51f3d7a456eec66e710aeea21308d1359469bf4ce1807210f138080d7.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "f12fe85c830f3fe0988b0e2db257f2adcca5413285dc9d9be13930a8467deb27",
+      "sha256": "83f76b926eace7fd64f5a9bab3a01ed5b5f5a810590f861644328117857470cc"
+    },
+    {
+      "subjectId": 839,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/8f/7d/839_0uIrU.jpg",
+      "file": "637c4ad97e2d44448d4c67436a52bbff140ab5e8188cea80c2a9e8b1579491d6.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "4dc3cf860bf5ff1ef768d462af7203ab98677cf75ac546df6d6820ed0b0a1ef7",
+      "sha256": "8f34d9331b4c4a8c86c82efebc731ec5e6419e87b9a30a2e7cbfb70955d497f9"
+    },
+    {
+      "subjectId": 110467,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/73/26/110467_Fx9tT.jpg",
+      "file": "11398ae7048a9293c168aa10a60650497f26492c480ab8ac14ca37476d8d6b71.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "34234ab7253f792f18d80278b3580bf757905d04861f8f424b214132e5033142",
+      "sha256": "4313fdac3425c26c04e640bcbbe17d2e2e8470b955ec467ba18190c47bf510c3"
+    },
+    {
+      "subjectId": 263750,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/c2/56/263750_56TBs.jpg",
+      "file": "027731c224251fd2c48a7f84cb504c8c68ed882e56de7fe3d787609b03e05acc.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "c0ecd0346f52482398a0e35275de2dee3bb8fa7bc459034919ef6c56ca4e3665",
+      "sha256": "b3f32a4383978c7d83b96f59dfdef1db83dacc500a7fd44fef386ad668b72a81"
+    },
+    {
+      "subjectId": 3375,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/9b/9b/3375_33BCV.jpg",
+      "file": "2f6adeee920a57e2c62438228dc190748d7b772c1d2de89a52a11d18ab173ae1.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "a5b91cf2b53d8a282e993c25aba366a4d2378a54e96b1c90ee1e3cbd91852673",
+      "sha256": "f8ecb0644e51f9cbbf6b8b3a5d011b7c27485960eb972266fc3bcc45749423d3"
+    },
+    {
+      "subjectId": 2907,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/c7/55/2907_8xX82.jpg",
+      "file": "d43fc7f0442e8e7b42640bd8e56d26e4eb5be76f45e3b6021dcb09f3113be321.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "7cec5cdb2dd3e7a6637594582e306d36151509b16556fd39250753028d7bc496",
+      "sha256": "cb0d48f164b1697f969595a895aa8bb5d9082ae60dfa6d107aa89f8e0033fcbc"
+    },
+    {
+      "subjectId": 840,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/fa/83/840_JRk3Z.jpg",
+      "file": "dcd92716905c633d3b4244b95bfe96f7c01685e99913ccc899e01cd41359f884.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "0c8cad7d13b472b72dcd8be788f28da47d26f8a72afbc85a2d210ada1db17cf4",
+      "sha256": "9e962beb3f965b98118d360afe578d5b10f91f0a497f0377882c2c414ae11801"
+    },
+    {
+      "subjectId": 11834,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/e1/36/11834_fEZvv.jpg",
+      "file": "9241355418553ab2940770110481a4ab095e2b60ee0c5960a1785b5af87c31b2.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "b1890e3adf92e5dcd421cfdef151a42e31be21cc447802cee3bd81af1d3e0033",
+      "sha256": "ce0ad79f9eb7a84bd551ca854dab191f01e6fff844c520b8e8a19f729c281fb2"
+    },
+    {
+      "subjectId": 1270,
+      "url": "https://lain.bgm.tv/r/400/pic/cover/l/c8/50/1270_Yo7p2.jpg",
+      "file": "f77db7846be8ccd01a64f9875f6972a89a12d497ee6b8c8df97556c85ea79f6a.jpg",
+      "capturedAt": "2026-11-16T15:15:19.500073+00:00",
+      "originalSha256": "ed65877f4095ba93c141ac80317dc3879a3506d6e96f9754b769d735beceff0a",
+      "sha256": "0741a33d621b1ea23d33ef4ca7f13c0f08025e9ab416a112722ed8eb09dd5628"
+    }
+  ]
+}

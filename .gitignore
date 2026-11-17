@@ -1,0 +1,18 @@
+/local.properties
+/keystore.properties
+/build
+/.idea
+/.gradle
+/.settings
+.externalNativeBuild
+*.iws
+*.iml
+*.jks
+dadanplay.jks
+keystore.properties
+
+# local build output
+*.apk
+*.aab
+/out
+/captures
