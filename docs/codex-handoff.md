@@ -20,6 +20,8 @@
 - 使用交接指定的便携 JDK 11、Android SDK 33 和现有 Gradle 缓存，离线运行 `:app:testDebugUnitTest` 与 APK 构建。
 - 2026-11-17 首轮构建成功，app 实际 XML 报告54项测试、0失败、0错误、0跳过；包含新增搜索测试10项。覆盖关键词处理、短词优先、原词优先、换源上限、源过滤、结果源归属、HTTP 错误、单次超时、取消及外层超时。
 - 最终构建日志位于原工作区 `ddplay/out/ani-codex-search-build.log`。APK 的版本号仍为4.1.4（61），可覆盖调试安装。
+- 最终源码再次离线执行 `:app:testDebugUnitTest :app:assembleDebug`，44秒成功；app XML复核仍为54项、0失败、0错误。`aapt dump badging` 确认 minSdk 21、targetSdk 29、版本4.1.4（61）。
+- 交付包（原工作区 `ddplay/out/`）：`弹弹play-AniSource-TV-searchfix-armv7a.apk`，SHA256 `325e6d98cc06ca17bd417a3fee2014e38d080c25359fa74aa841800c311e2851`；`弹弹play-AniSource-TV-searchfix-arm64.apk`，SHA256 `877c3b2ac79f769d1f38cb184914491739202d54b7bc367420e29c1c6cc0cc1f`。
 - 本轮未执行 common/player 模块单测；未将旧报告算作本轮结果。
 
 ## 尚待设备验收
@@ -33,4 +35,5 @@
 
 - `gh auth login` 直连设备授权端点超时；使用 Windows 已启用的本机代理后返回 EOF，未完成 CLI 授权。
 - 用户明确授权改用已登录浏览器后，已创建私有空仓库。Git 通过既有凭据和进程级代理能读取该仓库。
+- 工程初始提交和本轮搜索改进已成功推送至远端 `main`，搜索实现提交为 `e428a05c5ae9d3061cf9fcc87034017d315abfc6`；`git ls-remote` 与浏览器仓库文件列表、更新后的README均已核对。
 - 网络参数只作用于单次命令，没有改系统代理、全局 Git 或 Gradle 配置；不要提取浏览器 Cookie/令牌来代替正规授权。
