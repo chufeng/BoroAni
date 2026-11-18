@@ -1,4 +1,8 @@
-# 老爷机追番
+# BoroAni
+
+**ボロアニ · Retro Anime Player**
+
+一款为旧设备保留的轻量追番应用。
 
 面向低配 Android 电视的追番界面。发现、榜单和搜索优先中文，缺失时使用日语原名。中文译名来源和修改说明见 [资料署名](docs/chinese-title-attribution.md)。
 
