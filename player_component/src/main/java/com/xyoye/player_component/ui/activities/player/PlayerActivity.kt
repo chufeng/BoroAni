@@ -442,8 +442,14 @@ private fun updatePlayer(source: BaseVideoSource) {
     private fun showPlayErrorDialog() {
         val source = videoSource
         val isTorrentSource = source?.getMediaType() == MediaType.MAGNET_LINK
+        val mediaRequestFailure = if (intent.getBooleanExtra("ani_tv_playback", false) &&
+            PlayerInitializer.playerType == PlayerType.TYPE_VLC_PLAYER) {
+            source?.getVideoUrl()?.let { com.xyoye.player.utils.VlcProxyServer.getInstance().failureMessageFor(it) }
+        } else null
 
-        val tips = if (source is StorageVideoSource && isTorrentSource) {
+        val tips = if (mediaRequestFailure != null) {
+            mediaRequestFailure
+        } else if (source is StorageVideoSource && isTorrentSource) {
             val taskLog = PlayTaskBridge.getTaskLog(source.getPlayTaskId())
             "播放失败，资源已失效或暂时无法访问，请尝试切换资源$taskLog"
         } else {

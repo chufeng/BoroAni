@@ -13,8 +13,9 @@ import kotlin.random.Random
  */
 
 class VlcProxyServer private constructor() : NanoHTTPD("127.0.0.1", randomPort()) {
-    private lateinit var url: String
-    private lateinit var headers: Map<String, String>
+    private data class MediaRequest(val url: String, val headers: Map<String, String>, val token: Long)
+    @Volatile private var mediaRequest: MediaRequest? = null
+    private val diagnostics = MediaRequestDiagnostics()
     @Volatile private var client = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS)
         .callTimeout(0, TimeUnit.SECONDS).followSslRedirects(false).build()
@@ -46,9 +47,12 @@ class VlcProxyServer private constructor() : NanoHTTPD("127.0.0.1", randomPort()
         if (session.method != Method.GET && session.method != Method.HEAD) {
             return newFixedLengthResponse(Status.METHOD_NOT_ALLOWED, "text/plain", "不支持此请求方法")
         }
+        val media = mediaRequest ?: return newFixedLengthResponse(Status.SERVICE_UNAVAILABLE, "text/plain", "尚未设置媒体")
         return try {
             val started = System.nanoTime()
-            val upstream = getProxyResponse(session)
+            val upstream = getProxyResponse(session, media)
+            if (upstream.code >= 400) diagnostics.httpFailure(media.token, upstream.code)
+            else diagnostics.succeeded(media.token)
             val body = upstream.body
             val debug = com.xyoye.player_component.BuildConfig.DEBUG
             val requestId = System.identityHashCode(upstream)
@@ -56,9 +60,13 @@ class VlcProxyServer private constructor() : NanoHTTPD("127.0.0.1", randomPort()
             val stream = object : java.io.FilterInputStream(body?.byteStream() ?: java.io.ByteArrayInputStream(ByteArray(0))) {
                 private var bytes = 0L
                 private var eof = false
-                override fun read(): Int = super.read().also { if (it >= 0) bytes++ else eof = true }
+                private fun <T> readSafely(block: () -> T): T = try { block() } catch (e: java.io.IOException) {
+                    diagnostics.failed(media.token, e)
+                    throw e
+                }
+                override fun read(): Int = readSafely { `in`.read() }.also { if (it >= 0) bytes++ else eof = true }
                 override fun read(buffer: ByteArray, offset: Int, length: Int): Int =
-                    super.read(buffer, offset, length).also { if (it >= 0) bytes += it else eof = true }
+                    readSafely { `in`.read(buffer, offset, length) }.also { if (it >= 0) bytes += it else eof = true }
                 override fun close() {
                     try { super.close() } finally {
                         upstream.close()
@@ -80,26 +88,28 @@ class VlcProxyServer private constructor() : NanoHTTPD("127.0.0.1", randomPort()
             }
             response
         } catch (e: Exception) {
-            android.util.Log.w("VlcProxy", "上游请求失败：${e.javaClass.simpleName}")
+            diagnostics.failed(media.token, e)
+            android.util.Log.w("VlcProxy", "上游请求失败 host=${media.url.toHttpUrl().host} type=${e.javaClass.simpleName}")
             newFixedLengthResponse(Status.INTERNAL_ERROR, "text/plain", "媒体请求失败")
         }
     }
 
     fun getInputStreamUrl(url: String, headers: Map<String, String>): String {
-        this.url = url
-        this.headers = headers
         val upstream = url.toHttpUrl()
+        mediaRequest = MediaRequest(url, headers.toMap(), diagnostics.begin(url))
         return "http://127.0.0.1:$listeningPort${upstream.encodedPath}${upstream.encodedQuery?.let { "?$it" }.orEmpty()}"
     }
 
-    private fun getProxyResponse(session: IHTTPSession): okhttp3.Response {
+    fun failureMessageFor(url: String): String? = diagnostics.messageFor(url)
+
+    private fun getProxyResponse(session: IHTTPSession, media: MediaRequest): okhttp3.Response {
         val requestBuilder = Request.Builder()
         session.headers.filterKeys { it.lowercase() in setOf("range", "if-range", "accept") }.forEach { (key, value) ->
             requestBuilder.header(key, value)
         }
-        headers.forEach { (key, value) -> requestBuilder.header(key, value) }
+        media.headers.forEach { (key, value) -> requestBuilder.header(key, value) }
         requestBuilder.header("Accept-Encoding", "identity")
-        val target = upstreamUrl(url, session.uri, session.queryParameterString)
+        val target = upstreamUrl(media.url, session.uri, session.queryParameterString)
         val request = requestBuilder.url(target).method(session.method.name, null).build()
         return client.newCall(request).execute()
     }
