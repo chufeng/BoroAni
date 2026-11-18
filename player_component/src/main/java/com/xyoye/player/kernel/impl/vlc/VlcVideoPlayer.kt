@@ -210,6 +210,9 @@ class VlcVideoPlayer(private val mContext: Context) : AbstractVideoPlayer() {
         return lastKnownPositionMs
     }
 
+    // The controller position is updated optimistically in seekTo(). Query VLC for the log.
+    override fun getSeekPositionForLog(): Long = if (isPlayerAvailable()) mMediaPlayer.time else -1L
+
     override fun getDuration(): Long {
         return mCurrentDuration
     }

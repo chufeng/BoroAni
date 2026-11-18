@@ -121,6 +121,8 @@ abstract class AbstractVideoPlayer : InterVideoTrack {
      */
     abstract fun getCurrentPosition(): Long
 
+    internal open fun getSeekPositionForLog(): Long = getCurrentPosition()
+
     /**
      * 获取视频时长
      */

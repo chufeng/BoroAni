@@ -3,6 +3,7 @@ package com.xyoye.player
 import android.content.Context
 import android.graphics.PointF
 import android.media.AudioManager
+import android.os.SystemClock
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.KeyEvent
@@ -26,6 +27,7 @@ import com.xyoye.player.surface.InterSurfaceView
 import com.xyoye.player.surface.SurfaceFactory
 import com.xyoye.player.utils.AudioFocusHelper
 import com.xyoye.player.utils.PlayerConstant
+import com.xyoye.player.utils.TvSeekLog
 import com.xyoye.player.wrapper.InterVideoPlayer
 import com.xyoye.player.wrapper.InterVideoTrack
 import com.xyoye.player_component.utils.PlayRecorder
@@ -63,6 +65,8 @@ class DanDanVideoPlayer(
 
     //播放器
     private lateinit var mVideoPlayer: AbstractVideoPlayer
+
+    private var pendingTvSeekSample: Pair<Int, Runnable>? = null
 
     //播放资源
     private lateinit var videoSource: BaseVideoSource
@@ -130,10 +134,41 @@ class DanDanVideoPlayer(
 
     override fun canSeek() = isInPlayState() && mVideoPlayer.canSeek()
 
-    override fun seekTo(timeMs: Long) {
-        if (timeMs >= 0 && isInPlayState()) {
-            mVideoPlayer.seekTo(timeMs)
+    override fun seekTo(timeMs: Long, tvSeekLogId: Int?) {
+        if (timeMs < 0 || !isInPlayState()) {
+            tvSeekLogId?.let { TvSeekLog.record(it, "rejected state=$mCurrentPlayState targetMs=$timeMs") }
+            return
         }
+        cancelTvSeekSample("superseded")
+        val player = mVideoPlayer
+        val startedAt = SystemClock.uptimeMillis()
+        tvSeekLogId?.let {
+            TvSeekLog.record(it, "dispatch kernel=${player.javaClass.simpleName} state=$mCurrentPlayState targetMs=$timeMs")
+        }
+        player.seekTo(timeMs)
+        if (tvSeekLogId != null) scheduleTvSeekSample(tvSeekLogId, player, timeMs, startedAt)
+    }
+
+    private fun scheduleTvSeekSample(id: Int, player: AbstractVideoPlayer, targetMs: Long, startedAt: Long) {
+        val sample = Runnable {
+            pendingTvSeekSample = null
+            if (player !== mVideoPlayer || !isInPlayState()) {
+                TvSeekLog.record(id, "sample_unavailable state=$mCurrentPlayState")
+            } else {
+                val position = runCatching { player.getSeekPositionForLog() }.getOrNull()?.takeIf { it >= 0L }
+                val elapsedMs = SystemClock.uptimeMillis() - startedAt
+                TvSeekLog.record(id, "sample elapsedMs=$elapsedMs targetMs=$targetMs kernelMs=${position ?: "unknown"} state=$mCurrentPlayState")
+            }
+        }
+        pendingTvSeekSample = id to sample
+        postDelayed(sample, 1_500L)
+    }
+
+    private fun cancelTvSeekSample(reason: String) {
+        val (id, sample) = pendingTvSeekSample ?: return
+        removeCallbacks(sample)
+        pendingTvSeekSample = null
+        TvSeekLog.record(id, "sample_cancelled reason=$reason")
     }
 
     override fun isPlaying() = isInPlayState() && mVideoPlayer.isPlaying()
@@ -343,6 +378,7 @@ class DanDanVideoPlayer(
     }
 
     fun release() {
+        cancelTvSeekSample("player_released")
         if (mCurrentPlayState != PlayState.STATE_IDLE) {
             //释放缓存
             CacheManager.release()

@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.KeyEvent
 import com.xyoye.data_component.enums.PlayState
 import com.xyoye.player.controller.video.InterGestureView
+import com.xyoye.player.utils.TvSeekLog
 import com.xyoye.player_component.R
 
 /**
@@ -21,24 +22,44 @@ abstract class TvVideoController(
     private val remoteSeek = TvSeekSequence()
     private val handledKeys = mutableSetOf<Int>()
     private var navigatingControls = false
+    private var playState = PlayState.STATE_IDLE
 
     // Handle playback shortcuts before a focused control or Android's focus search sees them.
     fun dispatchPlaybackShortcut(event: KeyEvent): Boolean {
         val key = event.keyCode
         if (event.action == KeyEvent.ACTION_UP) return handledKeys.remove(key)
-        if (event.action != KeyEvent.ACTION_DOWN || !isWrapperInitialized()) return false
+        if (event.action != KeyEvent.ACTION_DOWN) return false
+        val isSeekKey = key == KeyEvent.KEYCODE_DPAD_LEFT || key == KeyEvent.KEYCODE_DPAD_RIGHT
+        val logId = if (isSeekKey && TvSeekLog.enabled) TvSeekLog.nextId() else null
+        logId?.let {
+            val direction = if (key == KeyEvent.KEYCODE_DPAD_RIGHT) "right" else "left"
+            TvSeekLog.record(it, "keydown direction=$direction repeat=${event.repeatCount}")
+        }
+        if (!isWrapperInitialized()) {
+            logId?.let { TvSeekLog.record(it, "skipped reason=controller_not_ready") }
+            return false
+        }
         if (event.repeatCount == 0) handledKeys.remove(key)
-        if (isPopupMode() || isLocked() || mControlWrapper.isSettingViewShowing()) {
+        val blockedBy = when {
+            isPopupMode() -> "popup"
+            isLocked() -> "locked"
+            mControlWrapper.isSettingViewShowing() -> "settings"
+            else -> null
+        }
+        if (blockedBy != null) {
+            logId?.let { TvSeekLog.record(it, "skipped reason=$blockedBy") }
             return key in handledKeys
         }
         if (navigatingControls && key in KeyEvent.KEYCODE_DPAD_UP..KeyEvent.KEYCODE_DPAD_CENTER) {
+            logId?.let { TvSeekLog.record(it, "skipped reason=control_navigation") }
             startFadeOut()
             return key in handledKeys
         }
 
         when (key) {
             KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                changePosition(if (key == KeyEvent.KEYCODE_DPAD_RIGHT) SEEK_STEP else -SEEK_STEP, event.repeatCount == 0)
+                val offset = if (key == KeyEvent.KEYCODE_DPAD_RIGHT) SEEK_STEP else -SEEK_STEP
+                changePosition(offset, event.repeatCount == 0, logId)
             }
             KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_MENU -> {
                 if (event.repeatCount == 0) showPlaybackDetails()
@@ -65,6 +86,7 @@ abstract class TvVideoController(
     }
 
     override fun onPlayStateChanged(playState: PlayState) {
+        this.playState = playState
         super.onPlayStateChanged(playState)
         if (playState == PlayState.STATE_IDLE || playState == PlayState.STATE_PREPARING) {
             remoteSeek.reset()
@@ -148,16 +170,27 @@ abstract class TvVideoController(
         return true
     }
 
-    private fun changePosition(offset: Long, notifyIfUnavailable: Boolean = true) {
+    private fun changePosition(offset: Long, notifyIfUnavailable: Boolean = true, logId: Int? = null) {
         val duration = mControlWrapper.getDuration()
-        if (!mControlWrapper.canSeek() || duration <= 0) {
+        val canSeek = mControlWrapper.canSeek()
+        if (!canSeek || duration <= 0) {
+            logId?.let {
+                TvSeekLog.record(it, "skipped reason=unavailable state=$playState canSeek=$canSeek durationMs=$duration")
+            }
             remoteSeek.reset()
             if (notifyIfUnavailable) showMessage(context.getString(R.string.tv_seek_unavailable))
             return
         }
-        val seek = remoteSeek.step(mControlWrapper.getCurrentPosition(), duration, offset, SystemClock.uptimeMillis())
-            ?: return
-        mControlWrapper.seekTo(seek.target)
+        val reportedPosition = mControlWrapper.getCurrentPosition()
+        val seek = remoteSeek.step(reportedPosition, duration, offset, SystemClock.uptimeMillis())
+        if (seek == null) {
+            logId?.let { TvSeekLog.record(it, "skipped reason=at_boundary reportedMs=$reportedPosition durationMs=$duration") }
+            return
+        }
+        logId?.let {
+            TvSeekLog.record(it, "request reportedMs=$reportedPosition fromMs=${seek.from} targetMs=${seek.target} durationMs=$duration")
+        }
+        mControlWrapper.seekTo(seek.target, logId)
 
         for (entry in mControlComponents.entries) {
             val view = entry.key

@@ -51,9 +51,9 @@ class ControlWrapper(
 
     override fun canSeek() = mVideoPlayer.canSeek()
 
-    override fun seekTo(timeMs: Long) {
+    override fun seekTo(timeMs: Long, tvSeekLogId: Int?) {
         //播放器
-        mVideoPlayer.seekTo(timeMs)
+        mVideoPlayer.seekTo(timeMs, tvSeekLogId)
         //弹幕
         seekTo(timeMs, isPlaying())
         //视图

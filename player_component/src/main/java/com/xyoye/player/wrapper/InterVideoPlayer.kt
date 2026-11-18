@@ -42,7 +42,7 @@ interface InterVideoPlayer : InterVideoTrack {
     /**
      * 跳转至指定时间
      */
-    fun seekTo(timeMs: Long)
+    fun seekTo(timeMs: Long, tvSeekLogId: Int? = null)
 
     /**
      * 是否正在播放中
