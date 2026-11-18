@@ -5,8 +5,8 @@
 ## 工作区
 
 - 后续开发使用整理后的独立仓库 `ddplay-ani-tv`，不把原 `ddplay/repo` 的历史未提交改造再次混入。起点为 `db7a308`。
-- GitHub 私有仓库：<https://github.com/chufeng/ani-tv>，通过用户已登录的 Chrome 创建。
-- `origin` 为 `https://github.com/chufeng/ani-tv.git`。本机 `gh` 尚未登录，但 Git HTTPS 的远端读取已成功；无需为建仓再次申请连接器权限。
+- GitHub 私有仓库：<https://github.com/chufeng/BoroAni>，原名 `ani-tv`，已在 GitHub 仓库设置中更名。
+- `origin` 为 `https://github.com/chufeng/BoroAni.git`。本机 `gh` 尚未登录，Git HTTPS 可通过现有凭据访问远端。
 
 ## 已完成的开发
 
