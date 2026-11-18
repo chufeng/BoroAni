@@ -50,7 +50,7 @@ echo "sdk.dir=/path/to/Android/Sdk" > local.properties
 ./gradlew assembleDebug
 
 # 产物
-app/build/outputs/apk/debug/dandanplay_v4.1.4_armeabi-v7a-debug.apk
+app/build/outputs/apk/debug/dandanplay_v0.1_armeabi-v7a-debug.apk
 ```
 
 单元测试（解析与规则逻辑，不需要设备）：
