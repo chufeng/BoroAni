@@ -20,6 +20,20 @@ class AniDiscoverRulesTest {
         assertEquals(DiscoverSeason(2026, 4), AniDiscoverRules.season(2026, 6))
         assertTrue(runCatching { AniDiscoverRules.season(2026, 13) }.isFailure)
     }
+    @Test fun quarterSwitchesAcrossYearAtBeijingMidnight() {
+        val firstMinuteOf2027 = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")).apply {
+            clear()
+            set(2026, java.util.Calendar.DECEMBER, 31, 16, 0)
+        }.timeInMillis
+        val autumn = AniDiscoverRules.currentSeason(firstMinuteOf2027 - 1)
+        val winter = AniDiscoverRules.currentSeason(firstMinuteOf2027)
+        assertEquals("2026年秋季", autumn.label)
+        assertEquals("10–12月", autumn.months)
+        assertEquals("2027年冬季", winter.label)
+        assertEquals(autumn, winter.shift(-1))
+        assertEquals(winter, autumn.shift(1))
+        assertEquals("WINTER", AniListRules.seasonOf(autumn.shift(1).month))
+    }
     @Test fun directoryPreservesServerRankAndRawPaginationCount() {
         val result = AniDiscoverRules.directory("""{"total":8,"data":[{"id":326,"type":2,"name":"Original","name_cn":"中文","date":"2004-01-01","rating":{"rank":7,"score":9.2}},{"id":2,"type":1},{"id":3,"type":2,"nsfw":true},{"id":326,"type":2}]}""")
         assertEquals(4, result.received)

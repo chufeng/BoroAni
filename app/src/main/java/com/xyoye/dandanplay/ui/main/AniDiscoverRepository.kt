@@ -94,10 +94,10 @@ internal class AniDiscoverRepository(
     /**
      * AniList 当季新番。B站番剧索引已长期停更，故新番默认走 AniList（国内可直连）。
      */
-    suspend fun anilistSeason(year: Int, month: Int, page: Int, refresh: Boolean): DiscoverResult<DiscoverBatch> {
-        require(month in 1..12)
+    suspend fun anilistSeason(quarter: DiscoverSeason, page: Int, refresh: Boolean): DiscoverResult<DiscoverBatch> {
         require(page >= 1)
-        val season = AniListRules.seasonOf(month)
+        val season = AniListRules.seasonOf(quarter.month)
+        val year = quarter.year
         return loadExternal(
             ANILIST_URL, "anilist-season-$season-$year-$page", "AniList $year $season 新番", refresh,
             AniListRules::season, jsonQuery(AniListRules.seasonQuery(page, season, year))

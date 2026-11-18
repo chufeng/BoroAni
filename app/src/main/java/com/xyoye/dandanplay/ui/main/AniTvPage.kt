@@ -25,8 +25,8 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
     private var metadata: DiscoverSubject? = null
     private var page = "discover"
     private var kind = "season"
-    private val season = AniDiscoverRules.currentSeason()
-    private var month = season.month
+    private var season = AniDiscoverRules.currentSeason()
+    private var followCurrentSeason = true
     private var weekday = AniDiscoverRules.today()
     private var items = emptyList<DiscoverSubject>()
     private var loadedPages = 0
@@ -51,7 +51,12 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
     fun start() { render(); loadList(false, false) }
     fun close() { active = false; job?.cancel() }
     fun resume() {
-        if (!active || activity.currentFocus != null) return
+        if (!active) return
+        if (page == "discover" && followCurrentSeason && season != AniDiscoverRules.currentSeason() && job?.isActive != true) {
+            loadList(false, false)
+            return
+        }
+        if (activity.currentFocus != null) return
         val saved = focus[page] ?: -1
         if (saved < 0) navigationControls.getOrNull(-saved - 1)?.requestFocus()
         else controls.getOrNull(saved)?.requestFocus()
@@ -81,13 +86,16 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
             ?: sources.firstOrNull { it.unsupported == null && repository.enabled(it) }
     }
     private fun loadList(more: Boolean, refresh: Boolean) {
-        if (!more) { loadedPages = 0; hasMore = false; items = emptyList(); notice = "正在请求 AniList 新番资料（国内可直连）" }
+        if (!more) {
+            if (kind == "season" && followCurrentSeason) season = AniDiscoverRules.currentSeason()
+            loadedPages = 0; hasMore = false; items = emptyList(); notice = "正在请求 AniList 新番资料（国内可直连）"
+        }
         work("正在加载番剧资料；不搜索资源站") {
             val page = loadedPages + 1
             val result = when (kind) {
                 "calendar" -> discover.anilistSchedule(weekday, page, refresh)
                 "rank" -> discover.anilistRank(page, refresh)
-                else -> discover.anilistSeason(season.year, month, page, refresh)
+                else -> discover.anilistSeason(season, page, refresh)
             }
             items = (if (more) items + result.value.items else result.value.items).distinctBy { it.id }
             loadedPages = page; hasMore = result.value.hasNextPage && loadedPages < 500; notice = result.notice
@@ -245,8 +253,16 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                     }
                 }
                 if (kind == "season") {
-                    filters((season.month..season.month + 2).map { m -> "${if (m == month) "• " else ""}${m}月新番" to { month = m; loadList(false, false) } })
-                    text("${season.label}季度新番 · 按热度排序；含连载与未开播，不代表源内已有资源", 20f, list)
+                    fun changeSeason(quarter: DiscoverSeason, followCurrent: Boolean = false) {
+                        season = quarter; followCurrentSeason = followCurrent; loadList(false, false)
+                    }
+                    val current = AniDiscoverRules.currentSeason()
+                    filters(listOf(
+                        "‹  上一季" to { changeSeason(season.shift(-1)) },
+                        "本季" to { changeSeason(current, true) },
+                        "下一季  ›" to { changeSeason(season.shift(1)) }
+                    ))
+                    text("${season.label} · ${season.months}", 20f, list)
                 } else if (kind == "calendar") {
                     filters((1..7).map { day -> "${if (day == weekday) "· " else ""}周${"一二三四五六日"[day - 1]}" to { weekday = day; loadList(false, false) } })
                     button("跳到今天 · 北京时间") { weekday = AniDiscoverRules.today(); loadList(false, false) }
@@ -359,7 +375,7 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                 button("返回发现首页") { back() }
                 button("搜索番剧") { openSearch("discover") }
                 button("源管理") { page = "sources"; work("读取订阅") { loadSources() } }
-                text("1. 发现首页默认显示当季首月放送的番剧，可切换本季三个月、每日放送与番剧榜，并加载更多。\n2. 番剧资料来自 AniList 公开接口，国内可直接连接、不需要代理；B站番剧索引已长期停更，故不再作为新番来源。\n3. 选择条目查看名称、更新与评分，再点“搜索资源”；优先用中文短片名搜索，未命中再尝试完整中文与备用源，最后尝试日语 / 原名。\n4. 初次使用请到源管理导入公开默认订阅或可信 Ani 订阅，选择并启用源。订阅/源不是番剧目录，CMS 与 Jellyfin 保持独立入口。\n5. 手动搜索先用输入原词。每次最多尝试3个已启用受支持源，中文最多2个词，未命中可再试1个日语词；结果显示实际源、关键词和失败原因。请核对番名与季数；未找到不表示全网没有。\n6. 方向键移动并滚动，确认选择；输入框按确认打开输入法，完成/搜索提交，返回先关闭键盘，再返回上级。请求中可取消。\n7. 当季按季度筛选，含连载与未开播，不是“今天上线”；放送表按北京时间归集；榜单是 AniList 评分排序，不是实时播放量。\n8. 中文片名优先，其次日语 / 原名；中文来自 bangumi-data（CC BY 4.0，2026-11-17 本地快照），按 AniList ID 精确对应；缺译名保留原名。本机缓存1小时，联网失败会显示上次结果的采集时间；元数据不保证源有资源；不要求 AppID。\n9. 仅支持 Ani Selector 静态子集；不执行 JS，不绕登录、验证码、付费限制或 DRM。播放保持现有 SurfaceView 链路。", 19f, list)
+                text("1. 发现首页默认显示当季首月放送的番剧，可切换季度、每日放送与番剧榜，并加载更多。\n2. 番剧资料来自 AniList 公开接口，国内可直接连接、不需要代理；B站番剧索引已长期停更，故不再作为新番来源。\n3. 选择条目查看名称、更新与评分，再点“搜索资源”；优先用中文短片名搜索，未命中再尝试完整中文与备用源，最后尝试日语 / 原名。\n4. 初次使用请到源管理导入公开默认订阅或可信 Ani 订阅，选择并启用源。订阅/源不是番剧目录，CMS 与 Jellyfin 保持独立入口。\n5. 手动搜索先用输入原词。每次最多尝试3个已启用受支持源，中文最多2个词，未命中可再试1个日语词；结果显示实际源、关键词和失败原因。请核对番名与季数；未找到不表示全网没有。\n6. 方向键移动并滚动，确认选择；输入框按确认打开输入法，完成/搜索提交，返回先关闭键盘，再返回上级。请求中可取消。\n7. 当季按季度筛选，含连载与未开播，不是“今天上线”；放送表按北京时间归集；榜单是 AniList 评分排序，不是实时播放量。\n8. 中文片名优先，其次日语 / 原名；中文来自 bangumi-data（CC BY 4.0，2026-11-17 本地快照），按 AniList ID 精确对应；缺译名保留原名。本机缓存1小时，联网失败会显示上次结果的采集时间；元数据不保证源有资源；不要求 AppID。\n9. 仅支持 Ani Selector 静态子集；不执行 JS，不绕登录、验证码、付费限制或 DRM。播放保持现有 SurfaceView 链路。", 19f, list)
             }
             "episodes" -> {
                 button("返回搜索结果") { back() }
