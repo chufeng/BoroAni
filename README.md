@@ -4,6 +4,8 @@
 
 一款为旧设备保留的轻量追番应用。
 
+![BoroAni 介绍图：旧电视上的新番海报墙与遥控器](docs/assets/boroani-hero.webp)
+
 面向低配 Android 电视的追番界面。发现、榜单和搜索优先中文，缺失时使用日语原名。中文译名来源和修改说明见 [资料署名](docs/chinese-title-attribution.md)。
 
 ## 项目来源
@@ -12,8 +14,6 @@
 > 目标是把「选源 → 搜番 → 选集 → 在线播放」这条链路搬到电视遥控器上，而不只是给手机播放器加接口。
 
 上游项目采用 Apache License 2.0，本项目代码同样以 Apache-2.0 发布，详见 [LICENSE](LICENSE)；内置中文片名数据单独遵循 CC BY 4.0，详见[资料署名](docs/chinese-title-attribution.md)；上游原始说明保留在 [README.upstream.md](README.upstream.md)。
-
-![hero](docs/assets/hero.png)
 
 ## 这是做什么的
 
