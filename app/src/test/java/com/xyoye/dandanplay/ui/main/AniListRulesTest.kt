@@ -61,6 +61,15 @@ class AniListRulesTest {
         assertEquals("2010-04-01", items[1].date)
     }
 
+    @Test fun followsServerPaginationAndContinuesRanking() {
+        val nextPage = rank.replace("\"media\":", "\"pageInfo\":{\"hasNextPage\":true},\"media\":")
+        val batch = AniListRules.rank(nextPage, 2)
+        assertTrue(batch.hasNextPage)
+        assertEquals(listOf(21, 22), batch.items.map { it.rank })
+        val lastPage = season.replace("\"media\":", "\"pageInfo\":{\"hasNextPage\":false},\"media\":")
+        assertTrue(!AniListRules.season(lastPage).hasNextPage)
+    }
+
     @Test fun scheduleUsesAiringTimeAndEpisode() {
         val item = AniListRules.schedule(schedule).items.single()
         assertEquals("薬屋のひとりごと", item.title)

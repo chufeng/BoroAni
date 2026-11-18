@@ -29,8 +29,8 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
     private var month = season.month
     private var weekday = AniDiscoverRules.today()
     private var items = emptyList<DiscoverSubject>()
-    private var offset = 0
-    private var total = 0
+    private var loadedPages = 0
+    private var hasMore = false
     private var notice = ""
     private var message = "选择条目查看简介，再用片名搜索资源源。榜单不代表源内有资源。"
     private var keyword = ""
@@ -81,16 +81,16 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
             ?: sources.firstOrNull { it.unsupported == null && repository.enabled(it) }
     }
     private fun loadList(more: Boolean, refresh: Boolean) {
-        if (!more) { offset = 0; total = 0; items = emptyList(); notice = "正在请求 AniList 新番资料（国内可直连）" }
+        if (!more) { loadedPages = 0; hasMore = false; items = emptyList(); notice = "正在请求 AniList 新番资料（国内可直连）" }
         work("正在加载番剧资料；不搜索资源站") {
-            val page = offset / 20 + 1
+            val page = loadedPages + 1
             val result = when (kind) {
                 "calendar" -> discover.anilistSchedule(weekday, page, refresh)
                 "rank" -> discover.anilistRank(page, refresh)
                 else -> discover.anilistSeason(season.year, month, page, refresh)
             }
             items = (if (more) items + result.value.items else result.value.items).distinctBy { it.id }
-            offset += result.value.received; total = result.value.total; notice = result.notice
+            loadedPages = page; hasMore = result.value.hasNextPage && loadedPages < 500; notice = result.notice
         }
     }
     private fun openCatalog(value: String) {
@@ -278,8 +278,8 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                     repeat(columns - group.size) { row.addView(Space(activity), LinearLayout.LayoutParams(0, 1, 1f).apply { rightMargin = dp(12) }) }
                     rows.add(members)
                 }
-                text("已展示 ${items.size} 条 / 接口总数 $total（可能含过滤或重复条目）", 20f, list)
-                if (kind != "calendar" && offset < total && offset < 10000) button("加载更多 · 每页20条") { loadList(true, false) }
+                text("已展示 ${items.size} 条", 20f, list)
+                if (hasMore) button("加载更多 · 每页20条") { loadList(true, false) }
             }
             "metadata" -> {
                 val item = metadata

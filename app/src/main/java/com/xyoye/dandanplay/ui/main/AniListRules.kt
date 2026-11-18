@@ -12,12 +12,12 @@ import java.util.TimeZone
 internal object AniListRules {
     /** season: WINTER/SPRING/SUMMER/FALL；year 为播出年。 */
     fun seasonQuery(page: Int, season: String, year: Int): String =
-        "query{Page(page:$page,perPage:20){media(type:ANIME,season:$season,seasonYear:$year," +
+        "query{Page(page:$page,perPage:20){pageInfo{hasNextPage} media(type:ANIME,season:$season,seasonYear:$year," +
             "sort:POPULARITY_DESC,isAdult:false){id title{romaji native} coverImage{large} " +
             "averageScore episodes status startDate{year month day} nextAiringEpisode{airingAt episode}}}}"
 
     fun rankQuery(page: Int): String =
-        "query{Page(page:$page,perPage:20){media(type:ANIME,sort:SCORE_DESC,format:TV,isAdult:false){" +
+        "query{Page(page:$page,perPage:20){pageInfo{hasNextPage} media(type:ANIME,sort:SCORE_DESC,format:TV,isAdult:false){" +
             "id title{romaji native} coverImage{large} averageScore episodes status " +
             "startDate{year month day} popularity}}}"
 
@@ -122,19 +122,22 @@ internal object AniListRules {
     }
 
     fun season(text: String): DiscoverBatch {
-        val rows = root(text)["media"] as? List<*> ?: error("AniList 新番格式变化：缺少 media")
-        return DiscoverBatch(rows.mapNotNull { subject(it, 0, true) }.distinctBy { it.id }, rows.size, rows.size)
+        val page = root(text)
+        val rows = page["media"] as? List<*> ?: error("AniList 新番格式变化：缺少 media")
+        return DiscoverBatch(rows.mapNotNull { subject(it, 0, true) }.distinctBy { it.id }, rows.size, rows.size, hasNextPage(page, rows.size))
     }
 
-    fun rank(text: String): DiscoverBatch {
-        val rows = root(text)["media"] as? List<*> ?: error("AniList 榜单格式变化：缺少 media")
-        val page = mutableListOf<DiscoverSubject>()
-        rows.forEachIndexed { index, value ->
-            subject(value, index + 1, false)?.let { page.add(it) }
-        }
-        val items = page.distinctBy { it.id }
-        return DiscoverBatch(items, items.size, rows.size)
+    fun rank(text: String, pageNumber: Int = 1): DiscoverBatch {
+        val page = root(text)
+        val rows = page["media"] as? List<*> ?: error("AniList 榜单格式变化：缺少 media")
+        val items = rows.mapIndexedNotNull { index, value ->
+            subject(value, (pageNumber - 1) * 20 + index + 1, false)
+        }.distinctBy { it.id }
+        return DiscoverBatch(items, items.size, rows.size, hasNextPage(page, rows.size))
     }
+
+    private fun hasNextPage(page: Map<String, Any?>, count: Int): Boolean =
+        count > 0 && (AniRules.obj(page["pageInfo"])["hasNextPage"] as? Boolean ?: (count == 20))
 
     fun schedule(text: String): DiscoverBatch {
         val rows = root(text)["airingSchedules"] as? List<*> ?: error("AniList 放送表格式变化：缺少 airingSchedules")

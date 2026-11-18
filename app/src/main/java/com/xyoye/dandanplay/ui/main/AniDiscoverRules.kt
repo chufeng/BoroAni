@@ -8,7 +8,7 @@ internal data class DiscoverSubject(val id: Int, val chinese: String, val origin
     val title: String get() = chinese.ifBlank { original }.ifBlank { "未命名条目 #$id" }
     fun searchTitle(originalName: Boolean): String = (if (originalName) original.ifBlank { chinese } else chinese.ifBlank { original }).trim()
 }
-internal data class DiscoverBatch(val items: List<DiscoverSubject>, val total: Int, val received: Int)
+internal data class DiscoverBatch(val items: List<DiscoverSubject>, val total: Int, val received: Int, val hasNextPage: Boolean = false)
 internal data class DiscoverSeason(val year: Int, val month: Int) {
     val label: String get() = "${year}年${month}–${month + 2}月"
 }

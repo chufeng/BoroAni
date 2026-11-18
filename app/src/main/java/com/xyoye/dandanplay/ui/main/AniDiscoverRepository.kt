@@ -108,7 +108,7 @@ internal class AniDiscoverRepository(
         require(page >= 1)
         return loadExternal(
             ANILIST_URL, "anilist-rank-$page", "AniList 高分榜", refresh,
-            AniListRules::rank, jsonQuery(AniListRules.rankQuery(page))
+            { AniListRules.rank(it, page) }, jsonQuery(AniListRules.rankQuery(page))
         ).withChineseNames()
     }
 
