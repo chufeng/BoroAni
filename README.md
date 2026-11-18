@@ -92,13 +92,7 @@ app/build/outputs/apk/debug/dandanplay_v4.1.4_armeabi-v7a-debug.apk
 
 播放相关改动：`PlayerActivity`（电视 SurfaceView 会话）、`PlayerInterceptorActivity`（标记透传）、`VlcProxyServer`（按 path/query 转发、严格 TLS、取消总超时）、`VlcVideoPlayer`（调试统计与释放）。
 
-`docs/dev-notes.md` 记录了逐轮诊断过程、实测数据与踩过的坑，包括：
-
-- Bangumi（api.bgm.tv）在实测网络中 DNS 污染 + TLS 握手被阻断，故番剧资料改用 AniList；
-- B站番剧索引季度参数失效（长期停更），不适合做新番来源；
-- 旧电视硬解失败回退软解的定位（TextureView → SurfaceView）；
-- 媒体代理 30 秒总超时截断分片导致反复缓冲的修复；
-- 卡片左侧描边被 View 边界裁切的原因与自绘方案。
+实现取舍与踩坑记录见 [docs/dev-notes.md](docs/dev-notes.md)。
 
 ## 已知限制
 
