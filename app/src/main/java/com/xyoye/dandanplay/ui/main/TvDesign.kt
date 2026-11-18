@@ -132,27 +132,13 @@ internal object TvDesign {
             gravity = Gravity.CENTER; setBackgroundColor(Color.parseColor("#DC141619"))
         }
         addView(absent, FrameLayout.LayoutParams(-1, -2, android.view.Gravity.BOTTOM))
-        val snapshot = if (url.startsWith("https://")) {
-            val key = java.security.MessageDigest.getInstance("SHA-256")
-                .digest(url.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
-            runCatching { c.assets.open("ani-discover/posters/$key.jpg").use {
-                android.graphics.drawable.Drawable.createFromStream(it, null)
-            } }.getOrNull()
-        } else null
-        if (snapshot != null) placeholderImage.visibility = View.GONE
-        fun showSnapshot() {
-            absent.text = if (snapshot != null) "缓存封面" else "暂无封面"
-            absent.visibility = View.VISIBLE
-        }
-        showSnapshot()
         if (url.startsWith("https://")) {
             image.load(url, loader(c)) {
                 size(288, 432); allowHardware(false); crossfade(false)
-                if (snapshot != null) { placeholder(snapshot); error(snapshot) }
                 listener(onSuccess = { _, _ ->
                     placeholderImage.visibility = View.GONE
                     absent.visibility = View.GONE
-                }, onError = { _, _ -> showSnapshot() })
+                })
             }
         }
     }

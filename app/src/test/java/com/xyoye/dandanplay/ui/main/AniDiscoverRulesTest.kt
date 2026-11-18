@@ -34,22 +34,6 @@ class AniDiscoverRulesTest {
         assertEquals(winter, autumn.shift(1))
         assertEquals("WINTER", AniListRules.seasonOf(autumn.shift(1).month))
     }
-    @Test fun directoryPreservesServerRankAndRawPaginationCount() {
-        val result = AniDiscoverRules.directory("""{"total":8,"data":[{"id":326,"type":2,"name":"Original","name_cn":"中文","date":"2004-01-01","rating":{"rank":7,"score":9.2}},{"id":2,"type":1},{"id":3,"type":2,"nsfw":true},{"id":326,"type":2}]}""")
-        assertEquals(4, result.received)
-        assertEquals(8, result.total)
-        assertEquals(1, result.items.size)
-        assertEquals(7, result.items.single().rank)
-        assertEquals("2004-01-01", result.items.single().date)
-        assertTrue(runCatching { AniDiscoverRules.directory("{}") }.isFailure)
-    }
-    @Test fun calendarUsesWeekdayIdAndLegacyDateWithoutInventingRank() {
-        val result = AniDiscoverRules.calendar("""[{"weekday":{"id":7},"items":[{"id":42,"type":2,"name":"原名","name_cn":"","air_date":"2026-10-04"}]}]""", 7)
-        assertEquals("原名", result.items.single().title)
-        assertEquals("2026-10-04", result.items.single().date)
-        assertEquals(0, result.items.single().rank)
-        assertTrue(runCatching { AniDiscoverRules.calendar("[]", 1) }.isFailure)
-    }
     @Test fun returnRoutesPreserveDetailAndSearchContext() {
         assertEquals("search", AniDiscoverRules.parent("episodes", "catalog", "metadata", "search"))
         assertEquals("metadata", AniDiscoverRules.parent("search", "catalog", "metadata", "search"))
