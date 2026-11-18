@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.InsetDrawable
 import android.graphics.drawable.StateListDrawable
-import android.view.KeyEvent
 import android.view.View
 import android.view.Gravity
 import android.widget.*
@@ -139,31 +138,6 @@ internal object TvDesign {
                     placeholderImage.visibility = View.GONE
                     absent.visibility = View.GONE
                 })
-            }
-        }
-    }
-    fun editor(view: EditText) {
-        val listener = view.keyListener
-        val type = view.inputType
-        val input = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
-        view.showSoftInputOnFocus = false
-        view.keyListener = null
-        view.isFocusable = true; view.isFocusableInTouchMode = true
-        view.setOnKeyListener { _, key, event ->
-            if (key == KeyEvent.KEYCODE_DPAD_CENTER || key == KeyEvent.KEYCODE_ENTER) {
-                if (event.action == KeyEvent.ACTION_UP && !event.isCanceled) {
-                    runCatching {
-                        view.keyListener = listener; view.setRawInputType(type)
-                        input.showSoftInput(view, 0)
-                    }.onFailure { android.util.Log.w("TvDesign", "showSoftInput failed", it) }
-                }
-                true
-            } else {
-                if (key == KeyEvent.KEYCODE_DPAD_UP || key == KeyEvent.KEYCODE_DPAD_DOWN) {
-                    runCatching { input.hideSoftInputFromWindow(view.windowToken, 0) }
-                    view.keyListener = null
-                }
-                false
             }
         }
     }

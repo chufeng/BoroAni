@@ -1,6 +1,8 @@
 package com.xyoye.dandanplay.ui.main
 
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
@@ -47,6 +49,9 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
     private val focus = mutableMapOf<String, Int>()
     private var controls = emptyList<View>()
     private var navigationControls = emptyList<View>()
+    private var activeEditor: TvSearchEditText? = null
+    private var renderedPage: String? = null
+    private var renderPending = false
 
     fun start() { loadList(false, false) }
     fun close() { active = false; job?.cancel() }
@@ -62,6 +67,7 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
         else controls.getOrNull(saved)?.requestFocus()
     }
     fun back(): Boolean {
+        if (activeEditor?.finishEditing() == true) return true
         job?.cancel(); job = null; retry = null
         val parent = AniDiscoverRules.parent(page, if (kind == "season") "discover" else "catalog", searchReturn, pickerReturn)
         if (parent == null) { close(); exit(); return true }
@@ -159,6 +165,13 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
     }
     private fun render() {
         if (!active) return
+        if (renderedPage == page && activeEditor?.isEditing == true) {
+            renderPending = true
+            return
+        }
+        renderPending = false
+        activeEditor = null
+        renderedPage = page
         try {
             renderUnsafe()
         } catch (e: Throwable) {
@@ -260,16 +273,21 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
         }
         val busy = job?.isActive == true
         if (message.isNotBlank()) text(message, gap = 6)
-        fun input(value: String, hintText: String, changed: (String) -> Unit): EditText = EditText(activity).apply {
+        fun input(value: String, hintText: String, changed: (String) -> Unit): TvSearchEditText = TvSearchEditText(activity).apply {
             setSingleLine(); setText(value); hint = hintText; textSize = 19f; setSelectAllOnFocus(true); inputType = android.text.InputType.TYPE_CLASS_TEXT
-            imeOptions = android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
+            imeOptions = EditorInfo.IME_ACTION_SEARCH or EditorInfo.IME_FLAG_NO_EXTRACT_UI
             addTextChangedListener(object : android.text.TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { changed(s?.toString().orEmpty()) }
                 override fun afterTextChanged(s: android.text.Editable?) {}
             })
             TvDesign.focus(this); setHintTextColor(TvDesign.muted); setPadding(dp(16), 0, dp(16), 0); textSize = 22f
-            TvDesign.editor(this)
+            activeEditor = this
+            onEditingEnded = {
+                val editor = this
+                // A background load can finish while the user is choosing characters.
+                post { if (activeEditor === editor && renderPending) render() }
+            }
             views.add(this); rows.add(listOf(this)); list.addView(this, LinearLayout.LayoutParams(-1,dp(52)).apply { bottomMargin = dp(12) })
         }
         when (page) {
@@ -355,12 +373,16 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
             }
             "search" -> {
                 val editor = input(keyword, "番剧名称") { keyword = it }
-                editor.setOnEditorActionListener { _, _, _ ->
-                    runCatching {
-                        (activity.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager)
-                            ?.hideSoftInputFromWindow(editor.windowToken, 0)
+                editor.setOnEditorActionListener { _, action, event ->
+                    val enterPressed = event?.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0 &&
+                        (event.keyCode == KeyEvent.KEYCODE_ENTER || event.keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER)
+                    if (action == EditorInfo.IME_ACTION_SEARCH || action == EditorInfo.IME_ACTION_DONE || enterPressed) {
+                        editor.finishEditing()
+                        search()
+                        true
+                    } else {
+                        false
                     }
-                    search(); true
                 }
                 actions { row, members ->
                     chip(row, members, "搜索", primary = true) { search() }

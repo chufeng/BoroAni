@@ -3,6 +3,7 @@ package com.xyoye.dandanplay.ui.main
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
+import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.MutableLiveData
@@ -65,6 +66,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(),
     override fun initView() {
         ARouter.getInstance().inject(this)
         if (com.xyoye.common_component.utils.TvUi.isTelevision(this)) {
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
             supportActionBar?.hide()
             supportFragmentManager.findAndRemoveFragment(
                 TAG_FRAGMENT_HOME, TAG_FRAGMENT_MEDIA, TAG_FRAGMENT_PERSONAL
