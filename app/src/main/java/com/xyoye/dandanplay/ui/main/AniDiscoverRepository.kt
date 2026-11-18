@@ -124,8 +124,7 @@ internal class AniDiscoverRepository(
 
     private suspend fun DiscoverResult<DiscoverBatch>.withChineseNames(): DiscoverResult<DiscoverBatch> =
         withContext(Dispatchers.IO) {
-            val batch = localize(value)
-            copy(value = batch, notice = notice + "\n片名中文优先，其次日语 / 原名；中文 ${batch.items.count { it.chinese.isNotBlank() }}/${batch.items.size} 条。译名：bangumi-data · CC BY 4.0 · 2026-11-17 快照")
+            copy(value = localize(value))
         }
 
     private suspend fun <T> loadExternal(

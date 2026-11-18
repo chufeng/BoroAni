@@ -1,8 +1,6 @@
 package com.xyoye.dandanplay.ui.main
 
-import android.graphics.Color
 import android.view.View
-import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -10,7 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import com.alibaba.android.arouter.launcher.ARouter
 import com.xyoye.common_component.config.RouteTable
 import com.xyoye.common_component.database.DatabaseManager
-import com.xyoye.common_component.utils.TvUi
+import com.xyoye.dandanplay.R
 import com.xyoye.data_component.entity.MediaLibraryEntity
 import com.xyoye.data_component.enums.MediaType
 import com.xyoye.user_component.ui.dialog.DeveloperAuthenticateDialog
@@ -48,51 +46,39 @@ internal class TvHome(private val activity: MainActivity) {
         fun dp(value: Int) = (value * density).toInt()
         val shell = LinearLayout(activity).apply {
             orientation = LinearLayout.HORIZONTAL
-            setPadding(dp(32), dp(32), dp(32), dp(32))
+            setPadding(dp(32), dp(24), dp(32), dp(20))
             setBackgroundColor(TvDesign.paper)
             clipChildren = true
         }
         val rail = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = true }
-        shell.addView(ScrollView(activity).apply { addView(rail) }, LinearLayout.LayoutParams(dp(156), -1).apply { rightMargin = dp(24) })
-        rail.addView(TvDesign.text(activity, "老爷机追番", 22f, true))
-        rail.addView(TvDesign.text(activity, "ANIME / TV", 16f).apply { setTextColor(TvDesign.teal) })
+        shell.addView(ScrollView(activity).apply { isVerticalScrollBarEnabled = false; addView(rail) }, LinearLayout.LayoutParams(dp(148), -1).apply { rightMargin = dp(28) })
+        rail.addView(TvDesign.brand(activity))
         val navigation = mutableListOf<View>()
-        fun nav(label: String, selected: Boolean, action: () -> Unit) {
-            val view = TvDesign.button(activity, label, action).apply {
-                textSize = 20f; isSelected = selected
-            }
+        fun nav(label: String, icon: Int, selected: Boolean, action: () -> Unit) {
+            val view = TvDesign.destination(activity, label, icon, selected, action)
             navigation.add(view)
-            rail.addView(view, LinearLayout.LayoutParams(-1, dp(60)).apply { bottomMargin = dp(8) })
+            rail.addView(view, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(4) })
         }
-        nav("主菜单", page == "home") { page = "home"; restoreIndex = 0; render() }
-        nav("发现番剧", false) {
+        nav("主菜单", R.drawable.ic_main_home, page == "home") { page = "home"; restoreIndex = 0; render() }
+        nav("发现番剧", android.R.drawable.ic_media_play, false) {
             aniPage = AniTvPage(activity) { aniPage = null; render() }.also { it.start() }
         }
-        nav("媒体库", page == "sources") { page = "sources"; restoreIndex = 2; render() }
-        nav("设置", page == "settings") { page = "settings"; restoreIndex = 3; render() }
+        nav("媒体库", R.drawable.ic_main_media, page == "sources") { page = "sources"; restoreIndex = 2; render() }
+        nav("设置", android.R.drawable.ic_menu_preferences, page == "settings") { page = "settings"; restoreIndex = 3; render() }
         val root = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = true }
         shell.addView(root, LinearLayout.LayoutParams(0, -1, 1f))
         root.addView(TextView(activity).apply {
             text = when (page) {
-                "sources" -> "源列表 / 媒体库"
-                "settings" -> "电视设置"
-                else -> "老爷机追番 · TV"
+                "sources" -> "媒体库"
+                "settings" -> "设置"
+                else -> "主菜单"
             }
-            textSize = 34f
+            textSize = 28f
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
             setTextColor(TvDesign.ink)
-        })
-        root.addView(TextView(activity).apply {
-            text = "CMS 为现有采集接口，不兼容 Ani 规则；方向键移动，确认打开，返回上一级。"
-            textSize = 22f
-            setTextColor(TvDesign.muted)
-            setPadding(0, dp(8), 0, dp(12))
+            setPadding(0, 0, 0, dp(12))
         })
         val list = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; clipChildren = true; setPadding(dp(6), dp(6), dp(6), dp(12)) }
-        list.addView(TvDesign.hero(activity, when (page) {
-            "sources" -> "把喜欢的内容，连到大屏"
-            "settings" -> "简单设置，安心观看"
-            else -> "让故事，回到大屏幕"
-        }, "发现番剧与资源搜索分开；可选凭证，不阻断 Ani 观看入口。"), LinearLayout.LayoutParams(-1, dp(168)).apply { bottomMargin = dp(16) })
         root.addView(ScrollView(activity).apply {
             isFillViewport = true
             addView(list)
@@ -100,7 +86,9 @@ internal class TvHome(private val activity: MainActivity) {
         val buttons = mutableListOf<View>()
         fun button(label: String, action: () -> Unit) {
             val index = navigation.size + buttons.size
-            val view = TvDesign.button(activity, label) { restoreIndex = index; action() }
+            val view = TvDesign.button(activity, label, flat = true) { restoreIndex = index; action() }.apply {
+                gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.START
+            }
             buttons.add(view)
             list.addView(view, LinearLayout.LayoutParams(-1, -2).apply {
                 bottomMargin = dp(10)
@@ -124,7 +112,7 @@ internal class TvHome(private val activity: MainActivity) {
                 button("弹弹play 官方 API 凭证（可选）") {
                     dialog = DeveloperAuthenticateDialog(activity) {}.also { it.show() }
                 }
-                button("说明：CMS / Jellyfin 不需要弹弹play AppID") {
+                button("凭证说明") {
                     dialog = AlertDialog.Builder(activity)
                         .setTitle("官方 API 凭证")
                         .setMessage("仅使用弹弹play官方API的功能需要自行申请并配置AppID和AppSecret。电视首页不会自动调用番剧首页、云过滤或自动登录。Ani入口支持官方Selector静态规则子集；动态JS、验证码、DRM不支持。观看视频不需要官方API凭据，弹幕等官方API功能可选。")
@@ -133,11 +121,10 @@ internal class TvHome(private val activity: MainActivity) {
                 button("返回电视首页") { back() }
             }
             else -> {
-                button("发现番剧 · 新番 / 每日放送 / 榜单 / 搜索") {
+                button("发现番剧") {
                     aniPage = AniTvPage(activity) { aniPage = null; render() }.also { it.start() }
                 }
-                button("在线源 · CMS") { page = "sources"; restoreIndex = 2; render() }
-                button("源列表 / Jellyfin 媒体库") { page = "sources"; restoreIndex = 2; render() }
+                button("媒体库") { page = "sources"; restoreIndex = 2; render() }
                 button("设置") { page = "settings"; restoreIndex = 3; render() }
                 button("返回 / 退出") { activity.onBackPressed() }
             }

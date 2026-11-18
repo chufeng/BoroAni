@@ -10,6 +10,7 @@ import android.graphics.drawable.InsetDrawable
 import android.graphics.drawable.StateListDrawable
 import android.view.KeyEvent
 import android.view.View
+import android.view.Gravity
 import android.widget.*
 import coil.ImageLoader
 import coil.load
@@ -20,30 +21,28 @@ import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
 internal object TvDesign {
-    val paper = Color.parseColor("#F7F3EB")
-    val ink = Color.parseColor("#253D3A")
-    val muted = Color.parseColor("#596763")
-    val teal = Color.parseColor("#176D65")
-    val coral = Color.parseColor("#B64E3D")
+    val paper = Color.parseColor("#141619")
+    val ink = Color.parseColor("#F3F5F6")
+    val muted = Color.parseColor("#B3BBC3")
+    val accent = Color.parseColor("#91E2CC")
+    val rating = Color.parseColor("#F0C37F")
+    private val panel = Color.parseColor("#23272D")
+    private val selected = Color.parseColor("#243C39")
     fun dp(c: Context, n: Int) = (c.resources.displayMetrics.density * n).toInt()
-    /**
-     * 卡片背景。用 InsetDrawable 内缩 2dp，让 3dp 焦点描边完整落在 View 内部；
-     * 否则 stroke 居中画在边界上，外侧一半会被 View bounds 裁掉（表现为左边框和左圆角消失）。
-     */
-    fun background(c: Context, focused: Boolean = false, fill: Int? = null): Drawable {
+    private fun background(c: Context, fill: Int, focused: Boolean = false): Drawable {
         val shape = GradientDrawable().apply {
-            setColor(fill ?: Color.parseColor(if (focused) "#E4F0E9" else "#FFFDFA"))
-            cornerRadius = dp(c, 12).toFloat()
-            setStroke(dp(c, if (focused) 3 else 1), if (focused) teal else Color.parseColor("#DDDCD2"))
+            setColor(fill)
+            cornerRadius = dp(c, 8).toFloat()
+            if (focused) setStroke(dp(c, 2), accent)
         }
         return InsetDrawable(shape, dp(c, 2))
     }
     fun text(c: Context, value: String, size: Float = 22f, bold: Boolean = false) = TextView(c).apply {
         text = value; textSize = size; setTextColor(ink)
         if (bold) setTypeface(typeface, Typeface.BOLD)
-        setPadding(dp(c, 8), dp(c, 6), dp(c, 8), dp(c, 10))
+        setPadding(0, dp(c, 3), 0, dp(c, 3))
     }
-    fun focus(view: View) {
+    fun focus(view: View, flat: Boolean = false, primary: Boolean = false) {
         view.isFocusable = true; view.isFocusableInTouchMode = true
         if (view.id == View.NO_ID) view.id = View.generateViewId()
         val ctx = view.context
@@ -51,44 +50,53 @@ internal object TvDesign {
         val left = view.paddingLeft; val top = view.paddingTop
         val right = view.paddingRight; val bottom = view.paddingBottom
         view.background = StateListDrawable().apply {
-            addState(intArrayOf(android.R.attr.state_focused), background(ctx, true))
-            addState(intArrayOf(android.R.attr.state_selected), background(ctx, false, Color.parseColor("#EDF2E9")))
-            addState(intArrayOf(), background(ctx, false))
+            addState(intArrayOf(android.R.attr.state_focused), background(ctx, if (primary) ink else selected, true))
+            addState(intArrayOf(android.R.attr.state_selected), background(ctx, selected))
+            addState(intArrayOf(), background(ctx, when { primary -> accent; flat -> Color.TRANSPARENT; else -> panel }))
         }
         view.setPadding(left, top, right, bottom)
-        if (view is TextView) view.setTextColor(ink)
+        if (view is TextView) view.setTextColor(if (primary) paper else ink)
         view.setOnFocusChangeListener { v, has ->
             if (has) v.post { v.requestRectangleOnScreen(Rect(0, 0, v.width, v.height), false) }
         }
     }
-    /**
-     * 用 TextView 而不是 Button：系统 Button 的背景带水平 inset 与 elevation 阴影，
-     * 在电视上会让卡片左侧被裁、右下出现灰边。自绘卡片可以完全控制边界。
-     */
-    fun button(c: Context, label: String, action: () -> Unit) = TextView(c).apply {
-        text = label; textSize = 22f
-        gravity = android.view.Gravity.CENTER_VERTICAL
+    fun button(c: Context, label: String, flat: Boolean = false, primary: Boolean = false, action: () -> Unit) = TextView(c).apply {
+        text = label; textSize = 18f
+        gravity = Gravity.CENTER
         isSingleLine = false
         ellipsize = null
         includeFontPadding = false
-        minHeight = dp(c, 60)
-        setPadding(dp(c, 20), dp(c, 12), dp(c, 20), dp(c, 12))
-        focus(this)
-        if (label.startsWith("搜索资源")) { setTextColor(coral); setTypeface(typeface, Typeface.BOLD) }
+        minHeight = dp(c, 44)
+        setPadding(dp(c, 14), dp(c, 9), dp(c, 14), dp(c, 9))
+        focus(this, flat, primary)
+        if (primary) setTypeface(typeface, Typeface.BOLD)
         setOnClickListener { action() }
     }
-    fun hero(c: Context, title: String, subtitle: String): View = FrameLayout(c).apply {
-        addView(ImageView(c).apply {
-            setImageResource(R.drawable.tv_coast); scaleType = ImageView.ScaleType.CENTER_CROP
-            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, FrameLayout.LayoutParams(-1, -1))
-        addView(LinearLayout(c).apply {
-            orientation = LinearLayout.VERTICAL; setPadding(dp(c, 20), dp(c, 16), dp(c, 12), dp(c, 12))
-            background = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, intArrayOf(Color.parseColor("#FAF5EB"), Color.parseColor("#F2FAF5EB"), Color.TRANSPARENT))
-            addView(text(c, "老爷机追番  /  TV", 16f, true).apply { setTextColor(teal); setPadding(dp(c, 8), 0, dp(c, 8), dp(c, 4)) })
-            addView(text(c, title, 28f, true).apply { setPadding(dp(c, 8), 0, dp(c, 8), dp(c, 4)); ellipsize = null })
-            addView(text(c, subtitle, 18f).apply { setPadding(dp(c, 8), 0, dp(c, 8), 0); ellipsize = null; maxWidth = dp(c, 440) })
-        }, FrameLayout.LayoutParams(-1, -1))
+
+    fun destination(c: Context, label: String, icon: Int, active: Boolean, action: () -> Unit) =
+        button(c, label, flat = true, action = action).apply {
+            gravity = Gravity.CENTER_VERTICAL or Gravity.START
+            isSelected = active
+            val tint = if (active) accent else muted
+            setTextColor(if (active) accent else ink)
+            val glyph = c.getDrawable(icon)?.mutate()?.apply {
+                setTint(tint)
+                setBounds(0, 0, dp(c, 20), dp(c, 20))
+            }
+            setCompoundDrawablesRelative(glyph, null, null, null)
+            compoundDrawablePadding = dp(c, 10)
+        }
+
+    fun brand(c: Context) = text(c, "老爷机追番", 20f, true).apply {
+        setTextColor(accent)
+        setPadding(dp(c, 10), dp(c, 6), 0, dp(c, 24))
+    }
+
+    fun divider(c: Context) = View(c).apply {
+        setBackgroundColor(Color.parseColor("#33393F"))
+        layoutParams = LinearLayout.LayoutParams(-1, dp(c, 1)).apply {
+            topMargin = dp(c, 8); bottomMargin = dp(c, 8)
+        }
     }
     private var loader: ImageLoader? = null
     private fun loader(c: Context): ImageLoader {
