@@ -108,3 +108,8 @@ app/build/outputs/apk/debug/dandanplay_v4.1.4_armeabi-v7a-debug.apk
 - 规则格式参考：[open-ani/animeko](https://github.com/open-ani/animeko) 的 Selector 源定义。
 - 番剧元数据：[AniList](https://anilist.co) 公开 GraphQL API。
 - 本项目仅做客户端与界面改造，不包含任何受版权保护的视频内容，不绕过任何付费、登录或 DRM 机制。
+
+## 许可证
+
+- 本项目代码：[Apache License 2.0](LICENSE)
+- 内置中文片名数据：[CC BY 4.0](docs/chinese-title-attribution.md)
