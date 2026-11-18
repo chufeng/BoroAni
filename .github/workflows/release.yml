@@ -111,8 +111,8 @@ jobs:
           count=0
           while IFS= read -r apk; do
             case "${apk}" in
-              *arm64-v8a*) abi="arm64-v8a" ;;
-              *armeabi-v7a*) abi="armeabi-v7a" ;;
+              *arm64-v8a*) abi="arm64-v8a-64位" ;;
+              *armeabi-v7a*) abi="armeabi-v7a-32位" ;;
               *universal*) abi="universal" ;;
               *) abi="apk" ;;
             esac
@@ -161,6 +161,8 @@ jobs:
 
             - commit: ${{ github.sha }}
             - build: ${{ steps.signing.outputs.type }}
+
+            下载建议：32 位设备（老电视盒子）选 `armeabi-v7a-32位`，64 位设备选 `arm64-v8a-64位`，不确定就选 `universal`。
 
             ${{ steps.signing.outputs.type == 'release' && '正式签名构建，可直接覆盖安装同签名旧版本。' || '未配置签名 Secrets，本包为 debug 签名测试包，仅供试用，不能覆盖安装正式版本。' }}
           files: dist/*.apk

@@ -61,7 +61,7 @@ app/build/outputs/apk/debug/dandanplay_v0.1_armeabi-v7a-debug.apk
 
 ## 发布
 
-推送 `v*` 标签，或在 Actions 中手动触发 `Build & Release`，会构建 `armeabi-v7a`、`arm64-v8a`、`universal` 三个 APK 并创建 Release；手动触发时填写标签才会发布，留空只产出构建产物。
+推送 `v*` 标签，或在 Actions 中手动触发 `Build & Release`，会构建 `armeabi-v7a-32位`、`arm64-v8a-64位`、`universal` 三个 APK 并创建 Release；手动触发时填写标签才会发布，留空只产出构建产物。
 
 正式签名需要在仓库 Secrets 中配置 `KEYSTORE_BASE64`（keystore 文件 base64）、`KEYSTORE_PASS`、`ALIAS_NAME`、`ALIAS_PASS`。未配置时流程仍可运行，但产物是 debug 签名测试包。
 
