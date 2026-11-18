@@ -117,10 +117,19 @@ internal object TvDesign {
             super.onMeasure(widthMeasureSpec, height)
         }
     }.apply {
+        background = GradientDrawable().apply { setColor(panel); cornerRadius = dp(c, 6).toFloat() }
+        clipToOutline = true
+        val placeholderImage = ImageView(c).apply {
+            setImageResource(R.drawable.tv_poster_placeholder)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            setPadding(dp(c, 10), 0, dp(c, 10), 0)
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }
+        addView(placeholderImage, FrameLayout.LayoutParams(-1, -1))
         val image = ImageView(c).apply { scaleType = ImageView.ScaleType.CENTER_CROP; contentDescription = title + "封面" }
         addView(image, FrameLayout.LayoutParams(-1, -1))
-        val absent = text(c, "封面暂缺\n原创装饰图", 18f).apply {
-            gravity = android.view.Gravity.CENTER; setBackgroundColor(Color.parseColor("#EFFFFAEE"))
+        val absent = text(c, "暂无封面", 14f).apply {
+            gravity = Gravity.CENTER; setBackgroundColor(Color.parseColor("#DC141619"))
         }
         addView(absent, FrameLayout.LayoutParams(-1, -2, android.view.Gravity.BOTTOM))
         val snapshot = if (url.startsWith("https://")) {
@@ -130,16 +139,21 @@ internal object TvDesign {
                 android.graphics.drawable.Drawable.createFromStream(it, null)
             } }.getOrNull()
         } else null
+        if (snapshot != null) placeholderImage.visibility = View.GONE
         fun showSnapshot() {
-            absent.text = if (snapshot != null) "真实封面快照 · 非实时" else "封面暂缺\n原创装饰图"
+            absent.text = if (snapshot != null) "缓存封面" else "暂无封面"
             absent.visibility = View.VISIBLE
         }
         showSnapshot()
-        image.load(url.takeIf { it.startsWith("https://") }, loader(c)) {
-            size(360, 540); allowHardware(false); crossfade(false)
-            if (snapshot != null) { placeholder(snapshot); error(snapshot); fallback(snapshot) }
-            else { placeholder(R.drawable.tv_projector); error(R.drawable.tv_projector); fallback(R.drawable.tv_projector) }
-            listener(onSuccess = { _, _ -> absent.visibility = View.GONE }, onError = { _, _ -> showSnapshot() })
+        if (url.startsWith("https://")) {
+            image.load(url, loader(c)) {
+                size(288, 432); allowHardware(false); crossfade(false)
+                if (snapshot != null) { placeholder(snapshot); error(snapshot) }
+                listener(onSuccess = { _, _ ->
+                    placeholderImage.visibility = View.GONE
+                    absent.visibility = View.GONE
+                }, onError = { _, _ -> showSnapshot() })
+            }
         }
     }
     fun editor(view: EditText) {
