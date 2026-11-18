@@ -156,6 +156,8 @@ class ExoVideoPlayer(private val mContext: Context) : AbstractVideoPlayer(), Pla
         playbackStateMapper.reset()
     }
 
+    override fun canSeek() = exoplayer.isCurrentMediaItemSeekable
+
     override fun seekTo(timeMs: Long) {
         exoplayer.seekTo(timeMs)
     }

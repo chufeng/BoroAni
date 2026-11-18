@@ -9,6 +9,7 @@ import com.xyoye.data_component.bean.VideoTrackBean
 import com.xyoye.data_component.data.DanmuEpisodeData
 import com.xyoye.data_component.entity.DanmuBlockEntity
 import com.xyoye.data_component.enums.PlayState
+import com.xyoye.data_component.enums.SettingViewType
 import com.xyoye.player.controller.base.GestureVideoController
 import com.xyoye.player.controller.danmu.DanmuController
 import com.xyoye.player.controller.setting.SettingController
@@ -54,6 +55,7 @@ class VideoController(
 
     private var lastPlayPosition = 0L
     private var lastVideoSpeed: Float? = null
+    private var videoTitle: String? = null
 
     private var switchVideoSourceBlock: ((Int) -> Unit)? = null
     private var trackAddedBlock: ((VideoTrackBean) -> Unit)? = null
@@ -121,6 +123,10 @@ class VideoController(
     }
 
     override fun onBackPressed(): Boolean {
+        if (mControlWrapper.isSettingViewShowing()) {
+            mControlWrapper.hideSettingView()
+            return true
+        }
         if (isLocked()) {
             showController()
             return true
@@ -129,11 +135,15 @@ class VideoController(
             mControlWrapper.hideController()
             return true
         }
-        if (mControlWrapper.isSettingViewShowing()) {
-            mControlWrapper.hideSettingView()
-            return true
-        }
         return super.onBackPressed()
+    }
+
+    override fun showPlaybackDetails() {
+        mControlWrapper.showSettingView(SettingViewType.TV_PLAYBACK_DETAILS, videoTitle)
+    }
+
+    override fun focusPlaybackControls() {
+        playerBotView.focusPlayButton()
     }
 
     override fun release() {
@@ -150,6 +160,7 @@ class VideoController(
      * 设置视频标题
      */
     fun setVideoTitle(title: String?) {
+        videoTitle = title
         playerTopView.setVideoTitle(title)
     }
 

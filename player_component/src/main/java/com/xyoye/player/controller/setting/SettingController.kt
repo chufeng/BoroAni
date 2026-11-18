@@ -38,6 +38,10 @@ class SettingController(
         return@lazy SettingTracksView(context).also { addView.invoke(it) }
     }
 
+    private val tvPlaybackDetailsView by lazy {
+        TvPlaybackDetailsView(context).also { addView.invoke(it) }
+    }
+
     private val showingSettingViews = mutableListOf<InterSettingView>()
     private var isPopupMode = false
 
@@ -82,7 +86,8 @@ class SettingController(
     }
 
     override fun settingRelease() {
-
+        hideSettingView()
+        showingSettingViews.clear()
     }
 
     fun setDatabaseBlock(
@@ -209,6 +214,10 @@ class SettingController(
                 return settingTracksView.apply {
                     setTrackType((extra as? TrackType) ?: TrackType.DANMU)
                 }
+            }
+
+            SettingViewType.TV_PLAYBACK_DETAILS -> {
+                return tvPlaybackDetailsView.apply { setVideoTitle(extra as? String) }
             }
         }
     }

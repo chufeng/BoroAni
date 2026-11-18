@@ -87,6 +87,8 @@ abstract class AbstractVideoPlayer : InterVideoTrack {
      */
     abstract fun seekTo(timeMs: Long)
 
+    open fun canSeek() = getDuration() > 0L
+
     /**
      * 设置视频倍速
      */

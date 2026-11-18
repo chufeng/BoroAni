@@ -165,8 +165,10 @@ class VlcVideoPlayer(private val mContext: Context) : AbstractVideoPlayer() {
         playerReleaseQueue.enqueueFinal(mediaPlayer, currentVideoSourceFd, libVlc)
     }
 
+    override fun canSeek() = seekable && isPlayerAvailable()
+
     override fun seekTo(timeMs: Long) {
-        if (seekable && isPlayerAvailable()) {
+        if (canSeek()) {
             // 用户主动跳转应立即取代 Surface 恢复位置保护
             positionRestoreGuardMs = 0L
             lastKnownPositionMs = timeMs.coerceAtLeast(0L)

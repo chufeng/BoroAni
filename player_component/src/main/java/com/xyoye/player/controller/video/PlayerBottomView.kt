@@ -221,6 +221,10 @@ class PlayerBottomView(
         sendDanmuBlock = block
     }
 
+    fun focusPlayButton() {
+        viewBinding.playIv.requestFocus()
+    }
+
     fun setSwitchVideoSourceBlock(block: (Int) -> Unit) {
         switchVideoSourceBlock = block
     }

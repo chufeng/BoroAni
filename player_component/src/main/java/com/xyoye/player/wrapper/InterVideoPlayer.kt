@@ -37,6 +37,8 @@ interface InterVideoPlayer : InterVideoTrack {
      */
     fun getCurrentPosition(): Long
 
+    fun canSeek(): Boolean
+
     /**
      * 跳转至指定时间
      */

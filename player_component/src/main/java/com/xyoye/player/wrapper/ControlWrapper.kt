@@ -49,6 +49,8 @@ class ControlWrapper(
 
     override fun getCurrentPosition() = mVideoPlayer.getCurrentPosition()
 
+    override fun canSeek() = mVideoPlayer.canSeek()
+
     override fun seekTo(timeMs: Long) {
         //播放器
         mVideoPlayer.seekTo(timeMs)

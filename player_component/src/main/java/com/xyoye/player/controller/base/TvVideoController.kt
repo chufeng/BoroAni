@@ -1,9 +1,12 @@
 package com.xyoye.player.controller.base
 
 import android.content.Context
+import android.os.SystemClock
 import android.util.AttributeSet
 import android.view.KeyEvent
+import com.xyoye.data_component.enums.PlayState
 import com.xyoye.player.controller.video.InterGestureView
+import com.xyoye.player_component.R
 
 /**
  * Created by xyoye on 2021/5/30.
@@ -14,6 +17,59 @@ abstract class TvVideoController(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : BaseVideoController(context, attrs, defStyleAttr) {
+
+    private val remoteSeek = TvSeekSequence()
+    private val handledKeys = mutableSetOf<Int>()
+    private var navigatingControls = false
+
+    // Handle playback shortcuts before a focused control or Android's focus search sees them.
+    fun dispatchPlaybackShortcut(event: KeyEvent): Boolean {
+        val key = event.keyCode
+        if (event.action == KeyEvent.ACTION_UP) return handledKeys.remove(key)
+        if (event.action != KeyEvent.ACTION_DOWN || !isWrapperInitialized()) return false
+        if (event.repeatCount == 0) handledKeys.remove(key)
+        if (isPopupMode() || isLocked() || mControlWrapper.isSettingViewShowing()) {
+            return key in handledKeys
+        }
+        if (navigatingControls && key in KeyEvent.KEYCODE_DPAD_UP..KeyEvent.KEYCODE_DPAD_CENTER) {
+            startFadeOut()
+            return key in handledKeys
+        }
+
+        when (key) {
+            KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                changePosition(if (key == KeyEvent.KEYCODE_DPAD_RIGHT) SEEK_STEP else -SEEK_STEP, event.repeatCount == 0)
+            }
+            KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_MENU -> {
+                if (event.repeatCount == 0) showPlaybackDetails()
+            }
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                if (key in handledKeys) return true
+                navigatingControls = true
+                showController(true)
+                focusPlaybackControls()
+            }
+            else -> return false
+        }
+        handledKeys.add(key)
+        return true
+    }
+
+    protected abstract fun showPlaybackDetails()
+
+    protected abstract fun focusPlaybackControls()
+
+    override fun hideController() {
+        navigatingControls = false
+        super.hideController()
+    }
+
+    override fun onPlayStateChanged(playState: PlayState) {
+        super.onPlayStateChanged(playState)
+        if (playState == PlayState.STATE_IDLE || playState == PlayState.STATE_PREPARING) {
+            remoteSeek.reset()
+        }
+    }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (isPopupMode()) {
@@ -76,7 +132,7 @@ abstract class TvVideoController(
             showController(true)
             return false
         }
-        changePosition(-10 * 1000L)
+        changePosition(-SEEK_STEP)
         return true
     }
 
@@ -88,23 +144,32 @@ abstract class TvVideoController(
             showController(true)
             return false
         }
-        changePosition(10 * 1000L)
+        changePosition(SEEK_STEP)
         return true
     }
 
-    private fun changePosition(offset: Long) {
+    private fun changePosition(offset: Long, notifyIfUnavailable: Boolean = true) {
         val duration = mControlWrapper.getDuration()
-        val currentPosition = mControlWrapper.getCurrentPosition()
-        val newPosition = currentPosition + offset
+        if (!mControlWrapper.canSeek() || duration <= 0) {
+            remoteSeek.reset()
+            if (notifyIfUnavailable) showMessage(context.getString(R.string.tv_seek_unavailable))
+            return
+        }
+        val seek = remoteSeek.step(mControlWrapper.getCurrentPosition(), duration, offset, SystemClock.uptimeMillis())
+            ?: return
+        mControlWrapper.seekTo(seek.target)
 
         for (entry in mControlComponents.entries) {
             val view = entry.key
             if (view is InterGestureView) {
                 view.onStartSlide()
-                view.onPositionChange(newPosition, currentPosition, duration)
+                view.onPositionChange(seek.target, seek.from, duration)
                 view.onStopSlide()
             }
         }
-        mControlWrapper.seekTo(newPosition)
+    }
+
+    private companion object {
+        const val SEEK_STEP = 10_000L
     }
 }

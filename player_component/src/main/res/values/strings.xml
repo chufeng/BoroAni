@@ -134,4 +134,12 @@
 
     <string name="text_long_press_speed">长按速度</string>
     <string name="tips_long_press_rule">长按速度与播放速度一致时，将禁用长按变速</string>
+    <string name="tv_playback_details">播放详情</string>
+    <string name="tv_playback_pause">暂停播放</string>
+    <string name="tv_playback_resume">继续播放</string>
+    <string name="tv_playback_speed">播放速度 · %1$s×</string>
+    <string name="tv_playback_aspect">画面比例 · %1$s</string>
+    <string name="tv_playback_time">%1$s / %2$s</string>
+    <string name="tv_playback_close">关闭</string>
+    <string name="tv_seek_unavailable">当前视频暂时无法跳转</string>
 </resources>

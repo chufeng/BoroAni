@@ -13,6 +13,7 @@ import com.xyoye.common_component.source.VideoSourceManager
 import com.xyoye.common_component.source.factory.StorageVideoSourceFactory
 import com.xyoye.common_component.storage.impl.LinkStorage
 import com.xyoye.data_component.entity.MediaLibraryEntity
+import com.xyoye.player_component.ui.activities.player.PlayerActivity
 import kotlinx.coroutines.*
 
 internal class AniTvPage(private val activity: MainActivity, private val exit: () -> Unit) {
@@ -468,8 +469,12 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                                 .followSslRedirects(false).build()
                         )
                         VideoSourceManager.getInstance().setSource(video)
+                        val playbackTitle = listOfNotNull(subject?.name, episode.name)
+                            .filter { it.isNotBlank() }.distinct().joinToString(" · ")
                         ARouter.getInstance().build(RouteTable.Player.Player)
-                            .withBoolean("ani_tv_playback", true).navigation(activity)
+                            .withBoolean("ani_tv_playback", true)
+                            .withString(PlayerActivity.EXTRA_PLAYBACK_TITLE, playbackTitle)
+                            .navigation(activity)
                     }
                 }
                 val columns = if (activity.resources.configuration.screenWidthDp >= 850) 5 else 3

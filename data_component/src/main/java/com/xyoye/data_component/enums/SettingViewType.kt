@@ -32,4 +32,6 @@ enum class SettingViewType {
     SUBTITLE_OFFSET_TIME,
 
     TRACKS,
+
+    TV_PLAYBACK_DETAILS,
 }

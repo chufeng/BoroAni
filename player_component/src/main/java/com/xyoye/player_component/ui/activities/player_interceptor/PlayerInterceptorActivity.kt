@@ -11,6 +11,7 @@ import com.xyoye.common_component.weight.ToastCenter
 import com.xyoye.player_component.BR
 import com.xyoye.player_component.R
 import com.xyoye.player_component.databinding.ActivityPlayerInterceptorBinding
+import com.xyoye.player_component.ui.activities.player.PlayerActivity
 
 @Route(path = RouteTable.Player.Player)
 class PlayerInterceptorActivity :
@@ -41,6 +42,7 @@ class PlayerInterceptorActivity :
         ARouter.getInstance()
             .build(RouteTable.Player.PlayerCenter)
             .withBoolean("ani_tv_playback", intent.getBooleanExtra("ani_tv_playback", false))
+            .withString(PlayerActivity.EXTRA_PLAYBACK_TITLE, intent.getStringExtra(PlayerActivity.EXTRA_PLAYBACK_TITLE))
             .navigation()
         finish()
     }

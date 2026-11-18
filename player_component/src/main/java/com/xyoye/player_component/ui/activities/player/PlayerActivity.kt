@@ -29,6 +29,7 @@ import com.xyoye.player_component.receiver.PlayerDanmuConfigReceiver
 import com.xyoye.common_component.source.VideoSourceManager
 import com.xyoye.common_component.source.base.BaseVideoSource
 import com.xyoye.common_component.source.media.StorageVideoSource
+import com.xyoye.common_component.utils.TvUi
 import com.xyoye.common_component.utils.screencast.ScreencastHandler
 import com.xyoye.common_component.utils.screencast.ScreencastRemoteControlBridge
 import com.xyoye.common_component.utils.screencast.ScreencastRemoteControlTarget
@@ -62,6 +63,12 @@ import kotlin.math.roundToInt
 @Route(path = RouteTable.Player.PlayerCenter)
 class PlayerActivity : BaseActivity<PlayerViewModel, ActivityPlayerBinding>(),
     PlayerReceiverListener, ScreencastHandler, ScreencastRemoteControlTarget {
+
+    companion object {
+        const val EXTRA_PLAYBACK_TITLE = "playback_title"
+    }
+
+    private val isTelevision by lazy { TvUi.isTelevision(this) }
 
     private val danmuViewModel: PlayerDanmuViewModel by lazy {
         ViewModelProvider(
@@ -130,7 +137,7 @@ class PlayerActivity : BaseActivity<PlayerViewModel, ActivityPlayerBinding>(),
         // 在控制器完成初始化并与播放器绑定后，再创建弹幕配置接收器
         danmuConfigReceiver = PlayerDanmuConfigReceiver(videoController)
 
-        applyPlaySource(VideoSourceManager.getInstance().getSource())
+        applyPlaySource(VideoSourceManager.getInstance().getSource(), intent.getStringExtra(EXTRA_PLAYBACK_TITLE))
 
         ScreencastRemoteControlBridge.attach(this)
     }
@@ -184,8 +191,12 @@ class PlayerActivity : BaseActivity<PlayerViewModel, ActivityPlayerBinding>(),
         finish()
     }
 
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        return (isTelevision && videoController.dispatchPlaybackShortcut(event)) || super.dispatchKeyEvent(event)
+    }
+
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        return danDanPlayer.onKeyDown(keyCode, event) or super.onKeyDown(keyCode, event)
+        return danDanPlayer.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
     }
 
     override fun onScreenLocked() {
@@ -288,7 +299,7 @@ class PlayerActivity : BaseActivity<PlayerViewModel, ActivityPlayerBinding>(),
         }
     }
 
-    private fun applyPlaySource(newSource: BaseVideoSource?) {
+    private fun applyPlaySource(newSource: BaseVideoSource?, playbackTitle: String? = null) {
         danDanPlayer.recordPlayInfo()
         danDanPlayer.pause()
         danDanPlayer.release()
@@ -300,14 +311,14 @@ class PlayerActivity : BaseActivity<PlayerViewModel, ActivityPlayerBinding>(),
         }
         VideoSourceManager.getInstance().setSource(videoSource!!)
 
-        updatePlayer(videoSource!!)
+        updatePlayer(videoSource!!, playbackTitle)
 
         afterInitPlayer()
     }
 
-private fun updatePlayer(source: BaseVideoSource) {
+    private fun updatePlayer(source: BaseVideoSource, playbackTitle: String?) {
         videoController.apply {
-            setVideoTitle(source.getVideoTitle())
+            setVideoTitle(playbackTitle?.takeIf { it.isNotBlank() } ?: source.getVideoTitle())
             setLastPosition(source.getCurrentPosition())
             setLastPlaySpeed(PlayerConfig.getNewVideoSpeed())
         }
@@ -397,7 +408,7 @@ private fun updatePlayer(source: BaseVideoSource) {
         PlayerInitializer.Player.isOpenSLESEnabled = PlayerConfig.isUseOpenSlEs()
         //是否使用SurfaceView
         val aniTvPlayback = intent.getBooleanExtra("ani_tv_playback", false) &&
-                com.xyoye.common_component.utils.TvUi.isTelevision(this)
+                isTelevision
         PlayerInitializer.surfaceType =
             if (aniTvPlayback || PlayerConfig.isUseSurfaceView()) SurfaceType.VIEW_SURFACE else SurfaceType.VIEW_TEXTURE
         android.util.Log.i("AniPlayback", "aniTv=$aniTvPlayback kernel=${PlayerInitializer.playerType} surface=${PlayerInitializer.surfaceType} hw=${PlayerConfig.getUseVLCHWDecoder()}")

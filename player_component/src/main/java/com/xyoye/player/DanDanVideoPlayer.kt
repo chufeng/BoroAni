@@ -128,6 +128,8 @@ class DanDanVideoPlayer(
         return 0
     }
 
+    override fun canSeek() = isInPlayState() && mVideoPlayer.canSeek()
+
     override fun seekTo(timeMs: Long) {
         if (timeMs >= 0 && isInPlayState()) {
             mVideoPlayer.seekTo(timeMs)
