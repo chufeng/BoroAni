@@ -23,6 +23,6 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             setDisplayShowTitleEnabled(true)
         }
 
-        title = "弹弹play"
+        title = "老爷机追番"
     }
 }

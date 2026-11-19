@@ -54,9 +54,9 @@
     <string name="tips_other_channels">其它:</string>
     <string name="tips_github_issues">GitHub Issues</string>
     <string name="action_edit_issues">编辑</string>
-    <string name="text_app_name">弹弹play 概念版</string>
-    <string name="text_github_project_name">Github：DanDanPlayForAndroid</string>
-    <string name="text_official_address">官网：www.dandanplay.com</string>
+    <string name="text_app_name">老爷机追番</string>
+    <string name="text_github_project_name">Github：BoroAni</string>
+    <string name="text_official_address">BoroAni · Retro Anime Player</string>
     <string name="action_save_theme">完成</string>
     <string name="text_theme_follow_system">跟随系统</string>
     <string name="tips_theme_follow_system">开启后，将跟随系统打开或关闭深色模式</string>

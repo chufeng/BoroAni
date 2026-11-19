@@ -47,10 +47,7 @@ class AppSettingFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>("app_version")?.apply {
             summary = AppUtils.getVersionName()
-            setOnPreferenceClickListener {
-                AppUtils.checkUpdate()
-                return@setOnPreferenceClickListener true
-            }
+            isSelectable = false
         }
 
         findPreference<Preference>("license")?.apply {

@@ -12,11 +12,13 @@ import android.view.View
 import android.view.Gravity
 import android.widget.*
 import coil.ImageLoader
+import coil.disk.DiskCache
 import coil.load
 import coil.memory.MemoryCache
 import com.xyoye.dandanplay.R
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 internal object TvDesign {
@@ -98,16 +100,29 @@ internal object TvDesign {
         }
     }
     private var loader: ImageLoader? = null
+    private var imageMemoryCache: MemoryCache? = null
     private fun loader(c: Context): ImageLoader {
         loader?.let { return it }
         val app = c.applicationContext
         val dispatch = Dispatcher().apply { maxRequests = 3; maxRequestsPerHost = 3 }
+        val memoryCache = MemoryCache.Builder(app).maxSizePercent(0.08).build()
+        val diskCache = DiskCache.Builder()
+            .directory(File(app.cacheDir, "tv-image-cache"))
+            .maxSizeBytes(64L * 1024L * 1024L)
+            .build()
+        imageMemoryCache = memoryCache
         return ImageLoader.Builder(app).okHttpClient(
             AniTls.configure(OkHttpClient.Builder(), app).dispatcher(dispatch)
                 .connectTimeout(10, TimeUnit.SECONDS).readTimeout(12, TimeUnit.SECONDS)
                 .callTimeout(20, TimeUnit.SECONDS).followSslRedirects(false).build()
-        ).memoryCache { MemoryCache.Builder(app).maxSizePercent(0.08).build() }
+        ).memoryCache(memoryCache).diskCache(diskCache)
             .crossfade(false).build().also { loader = it }
+    }
+    fun releaseImageMemory() {
+        imageMemoryCache?.clear()
+    }
+    fun cleanupPosterDisk(c: Context, force: Boolean = false) {
+        TvPosterArchive.shared(c).cleanupIfNeeded(force)
     }
     fun poster(c: Context, url: String, title: String): View = object : FrameLayout(c) {
         override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -132,13 +147,32 @@ internal object TvDesign {
         }
         addView(absent, FrameLayout.LayoutParams(-1, -2, android.view.Gravity.BOTTOM))
         if (url.startsWith("https://")) {
-            image.load(url, loader(c)) {
-                size(288, 432); allowHardware(false); crossfade(false)
-                listener(onSuccess = { _, _ ->
-                    placeholderImage.visibility = View.GONE
-                    absent.visibility = View.GONE
-                })
+            val archive = TvPosterArchive.shared(c)
+            val fresh = archive.fresh(url)
+            val stale = archive.stale(url)
+            fun show(source: Any, fallback: File?, retryNetwork: Boolean) {
+                image.load(source, loader(c)) {
+                    size(288, 432); allowHardware(false); crossfade(false)
+                    listener(
+                        onSuccess = { _, result ->
+                            placeholderImage.visibility = View.GONE
+                            absent.visibility = View.GONE
+                            if (source is String) archive.storeAsync(url, result.drawable)
+                        },
+                        onError = { _, _ ->
+                            when {
+                                source is File && retryNetwork -> {
+                                    archive.discard(url)
+                                    show(url, stale, false)
+                                }
+                                source is String && fallback != null -> show(fallback, null, false)
+                                else -> absent.visibility = View.VISIBLE
+                            }
+                        }
+                    )
+                }
             }
+            if (fresh != null) show(fresh, null, true) else show(url, stale, false)
         }
     }
     fun wire(rows: List<List<View>>, navigation: List<View> = emptyList()) {

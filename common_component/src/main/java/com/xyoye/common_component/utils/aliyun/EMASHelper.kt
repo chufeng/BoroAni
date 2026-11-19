@@ -4,12 +4,8 @@ import android.app.Application
 import com.alibaba.sdk.android.feedback.impl.FeedbackAPI
 import com.alibaba.sdk.android.man.MANServiceProvider
 import com.gyf.immersionbar.ImmersionBar
-import com.taobao.update.adapter.UpdateAdapter
-import com.taobao.update.common.framework.UpdateRuntime
-import com.taobao.update.datasource.UpdateDataSource
 import com.xyoye.common_component.R
 import com.xyoye.common_component.extension.isNightMode
-import com.xyoye.common_component.extension.toResString
 import com.xyoye.common_component.utils.SecurityHelper
 
 /**
@@ -23,7 +19,6 @@ object EMASHelper {
     fun init(application: Application) {
         initFeedback(application)
         initAnalyze(application)
-        initUpdate(application)
     }
 
     private fun initFeedback(application: Application) {
@@ -41,27 +36,5 @@ object EMASHelper {
         MANServiceProvider.getService()?.apply {
             manAnalytics.init(application, application, appKey, appSecret)
         }
-    }
-
-    private fun initUpdate(application: Application) {
-        //初始化
-        val appName = R.string.app_name.toResString()
-        UpdateRuntime.init(application, "", appName, "common")
-        UpdateDataSource.getInstance().init(
-            application,
-            "common",
-            "",
-            false,
-            appKey,
-            appSecret,
-            "",
-            UpdateAdapter()
-        )
-        //初始化更新弹窗
-        UpdateDialogManager.init(application)
-        //不开启缓存
-        UpdateDataSource.getInstance().isEnableCache = false
-        //执行一次更新检查
-        UpdateDataSource.getInstance().startUpdate(false)
     }
 }

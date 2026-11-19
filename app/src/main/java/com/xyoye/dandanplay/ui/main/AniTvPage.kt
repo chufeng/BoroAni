@@ -55,7 +55,12 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
     private var renderPending = false
 
     fun start() { loadList(false, false) }
-    fun close() { active = false; job?.cancel() }
+    fun close() {
+        active = false
+        job?.cancel()
+        TvDesign.releaseImageMemory()
+        TvDesign.cleanupPosterDisk(activity, force = true)
+    }
     fun resume() {
         if (!active) return
         if (page == "discover" && followCurrentSeason && season != AniDiscoverRules.currentSeason() && job?.isActive != true) {
@@ -170,6 +175,9 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
             renderPending = true
             return
         }
+        if (isPosterGrid(renderedPage) && !isPosterGrid(page)) {
+            TvDesign.releaseImageMemory()
+        }
         renderPending = false
         activeEditor = null
         renderedPage = page
@@ -194,6 +202,7 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
             }
         }
     }
+    private fun isPosterGrid(value: String?): Boolean = value == "discover" || value == "catalog"
 
     private fun renderUnsafe() {
         if (!active) return

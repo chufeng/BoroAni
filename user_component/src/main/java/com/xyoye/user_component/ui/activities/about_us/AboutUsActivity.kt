@@ -27,19 +27,19 @@ class AboutUsActivity : BaseActivity<AboutUsViewModel, ActivityAboutUsBinding>()
 
         title = ""
 
-        val describe = "《弹弹play 概念版》是一个本地视频播放器，是弹弹play系列应用安卓平台的实现，致力于视频+弹幕的播放，为您带来愉悦的观影体验。" +
-                "\n\n《弹弹play 概念版》亦是一个免费、开源Android项目，遵循Apache 2.0协议。项目仅用于个人学习、研究，不参与任何商业行为。"
+        val describe = "《老爷机追番》是一款为旧设备保留的轻量追番应用，支持番剧发现、来源搜索、选集播放与本地媒体播放。" +
+                "\n\nBoroAni 是一个免费、开源 Android 项目。项目仅用于个人学习、研究，不参与任何商业行为。"
 
         dataBinding.appDescribeTv.text = describe
 
         dataBinding.versionTv.text = "v${AppUtils.getVersionName()}  ${BuildConfig.BUILD_COMMIT}"
 
         dataBinding.officialAddressTv.setOnClickListener {
-            startUrlActivity("https://dandanplay.com")
+            startUrlActivity("https://github.com/chufeng/BoroAni")
         }
 
         dataBinding.sourceAddressTv.setOnClickListener {
-            startUrlActivity("https://github.com/xyoye/DanDanPlayForAndroid")
+            startUrlActivity("https://github.com/chufeng/BoroAni")
         }
     }
 }

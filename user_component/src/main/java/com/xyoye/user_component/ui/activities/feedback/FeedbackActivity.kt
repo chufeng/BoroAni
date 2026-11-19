@@ -45,7 +45,7 @@ class FeedbackActivity : BaseActivity<FeedbackViewModel, ActivityFeedbackBinding
 
             val intent = Intent(Intent.ACTION_SEND).apply {
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
-                putExtra(Intent.EXTRA_SUBJECT, "弹弹play - 反馈")
+                putExtra(Intent.EXTRA_SUBJECT, "老爷机追番 - 反馈")
                 putExtra(Intent.EXTRA_TEXT, "$phoneVersion\n$androidVersion\n\n$appVersion")
                 type = "text/plain"
             }
@@ -53,7 +53,7 @@ class FeedbackActivity : BaseActivity<FeedbackViewModel, ActivityFeedbackBinding
         }
 
         dataBinding.editIssuesTv.setOnClickListener {
-            startUrlActivity("https://github.com/xyoye/DanDanPlayForAndroid/issues")
+            startUrlActivity("https://github.com/chufeng/BoroAni/issues")
         }
     }
 
