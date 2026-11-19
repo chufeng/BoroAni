@@ -1,27 +1,33 @@
 package com.xyoye.player.controller.base
 
-import kotlin.math.abs
-
 internal class TvSeekSequence {
     data class Step(val from: Long, val target: Long)
 
-    private var latestTarget: Long? = null
-    private var lastSeekAt = 0L
+    private var latestStep: Step? = null
+    private var lastDirection = 0
 
-    fun step(position: Long, duration: Long, offset: Long, now: Long): Step? {
+    fun step(position: Long, duration: Long, offset: Long): Step? {
         if (duration <= 0) return null
         val reported = position.coerceIn(0L, duration)
-        // A burst of remote presses can arrive before the player reports its last seek.
-        val from = latestTarget?.takeIf { now - lastSeekAt < 750 && abs(it - reported) > 1000 }
-            ?.coerceIn(0L, duration) ?: reported
+        val direction = offset.compareTo(0L)
+        // Keep accumulating until key-up. Some TV remotes repeat slower than 750 ms.
+        val from = latestStep
+            ?.takeIf { direction != 0 && direction == lastDirection }
+            ?.target
+            ?.coerceIn(0L, duration)
+            ?: reported
         val target = from + offset.coerceIn(-from, duration - from)
         if (target == from) return null
-        latestTarget = target
-        lastSeekAt = now
-        return Step(from, target)
+        return Step(from, target).also {
+            latestStep = it
+            lastDirection = direction
+        }
     }
 
+    fun pending(): Step? = latestStep
+
     fun reset() {
-        latestTarget = null
+        latestStep = null
+        lastDirection = 0
     }
 }

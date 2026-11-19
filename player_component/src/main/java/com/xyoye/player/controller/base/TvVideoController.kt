@@ -1,7 +1,6 @@
 package com.xyoye.player.controller.base
 
 import android.content.Context
-import android.os.SystemClock
 import android.util.AttributeSet
 import android.view.KeyEvent
 import com.xyoye.data_component.enums.PlayState
@@ -23,13 +22,18 @@ abstract class TvVideoController(
     private val handledKeys = mutableSetOf<Int>()
     private var navigatingControls = false
     private var playState = PlayState.STATE_IDLE
+    private var pendingSeekLogId: Int? = null
 
     // Handle playback shortcuts before a focused control or Android's focus search sees them.
     fun dispatchPlaybackShortcut(event: KeyEvent): Boolean {
         val key = event.keyCode
-        if (event.action == KeyEvent.ACTION_UP) return handledKeys.remove(key)
-        if (event.action != KeyEvent.ACTION_DOWN) return false
         val isSeekKey = key == KeyEvent.KEYCODE_DPAD_LEFT || key == KeyEvent.KEYCODE_DPAD_RIGHT
+        if (event.action == KeyEvent.ACTION_UP) {
+            val handled = handledKeys.remove(key)
+            if (handled && isSeekKey) commitPendingSeek()
+            return handled
+        }
+        if (event.action != KeyEvent.ACTION_DOWN) return false
         val logId = if (isSeekKey && TvSeekLog.enabled) TvSeekLog.nextId() else null
         logId?.let {
             val direction = if (key == KeyEvent.KEYCODE_DPAD_RIGHT) "right" else "left"
@@ -39,7 +43,11 @@ abstract class TvVideoController(
             logId?.let { TvSeekLog.record(it, "skipped reason=controller_not_ready") }
             return false
         }
-        if (event.repeatCount == 0) handledKeys.remove(key)
+        if (event.repeatCount == 0) {
+            handledKeys.remove(key)
+            remoteSeek.reset()
+            pendingSeekLogId = null
+        }
         val blockedBy = when {
             isPopupMode() -> "popup"
             isLocked() -> "locked"
@@ -59,7 +67,7 @@ abstract class TvVideoController(
         when (key) {
             KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 val offset = if (key == KeyEvent.KEYCODE_DPAD_RIGHT) SEEK_STEP else -SEEK_STEP
-                changePosition(offset, event.repeatCount == 0, logId)
+                changePosition(offset, event.repeatCount == 0, logId, commit = false)
             }
             KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_MENU -> {
                 if (event.repeatCount == 0) showPlaybackDetails()
@@ -90,6 +98,7 @@ abstract class TvVideoController(
         super.onPlayStateChanged(playState)
         if (playState == PlayState.STATE_IDLE || playState == PlayState.STATE_PREPARING) {
             remoteSeek.reset()
+            pendingSeekLogId = null
         }
     }
 
@@ -154,6 +163,7 @@ abstract class TvVideoController(
             showController(true)
             return false
         }
+        remoteSeek.reset()
         changePosition(-SEEK_STEP)
         return true
     }
@@ -166,11 +176,17 @@ abstract class TvVideoController(
             showController(true)
             return false
         }
+        remoteSeek.reset()
         changePosition(SEEK_STEP)
         return true
     }
 
-    private fun changePosition(offset: Long, notifyIfUnavailable: Boolean = true, logId: Int? = null) {
+    private fun changePosition(
+        offset: Long,
+        notifyIfUnavailable: Boolean = true,
+        logId: Int? = null,
+        commit: Boolean = true
+    ) {
         val duration = mControlWrapper.getDuration()
         val canSeek = mControlWrapper.canSeek()
         if (!canSeek || duration <= 0) {
@@ -178,19 +194,26 @@ abstract class TvVideoController(
                 TvSeekLog.record(it, "skipped reason=unavailable state=$playState canSeek=$canSeek durationMs=$duration")
             }
             remoteSeek.reset()
+            pendingSeekLogId = null
             if (notifyIfUnavailable) showMessage(context.getString(R.string.tv_seek_unavailable))
             return
         }
         val reportedPosition = mControlWrapper.getCurrentPosition()
-        val seek = remoteSeek.step(reportedPosition, duration, offset, SystemClock.uptimeMillis())
+        val seek = remoteSeek.step(reportedPosition, duration, offset)
         if (seek == null) {
             logId?.let { TvSeekLog.record(it, "skipped reason=at_boundary reportedMs=$reportedPosition durationMs=$duration") }
             return
         }
         logId?.let {
-            TvSeekLog.record(it, "request reportedMs=$reportedPosition fromMs=${seek.from} targetMs=${seek.target} durationMs=$duration")
+            val action = if (commit) "request" else "preview"
+            TvSeekLog.record(it, "$action reportedMs=$reportedPosition fromMs=${seek.from} targetMs=${seek.target} durationMs=$duration")
         }
-        mControlWrapper.seekTo(seek.target, logId)
+        if (commit) {
+            pendingSeekLogId = null
+            mControlWrapper.seekTo(seek.target, logId)
+        } else {
+            pendingSeekLogId = logId ?: pendingSeekLogId
+        }
 
         for (entry in mControlComponents.entries) {
             val view = entry.key
@@ -200,6 +223,25 @@ abstract class TvVideoController(
                 view.onStopSlide()
             }
         }
+    }
+
+    private fun commitPendingSeek() {
+        val seek = remoteSeek.pending() ?: return
+        val logId = pendingSeekLogId
+        pendingSeekLogId = null
+        val duration = mControlWrapper.getDuration()
+        if (!mControlWrapper.canSeek() || duration <= 0) {
+            logId?.let {
+                TvSeekLog.record(it, "commit skipped reason=unavailable targetMs=${seek.target} durationMs=$duration")
+            }
+            remoteSeek.reset()
+            return
+        }
+        logId?.let {
+            TvSeekLog.record(it, "commit fromMs=${seek.from} targetMs=${seek.target} durationMs=$duration")
+        }
+        mControlWrapper.seekTo(seek.target, logId)
+        remoteSeek.reset()
     }
 
     private companion object {
