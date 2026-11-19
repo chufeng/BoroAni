@@ -336,7 +336,7 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                             orientation = LinearLayout.VERTICAL; setPadding(dp(5), dp(5), dp(5), dp(7)); clipChildren = true
                             contentDescription = item.title + "，确认查看详情"
                             TvDesign.focus(this, flat = true)
-                            addView(TvDesign.poster(activity, item.imageUrl, item.title), LinearLayout.LayoutParams(-1, -2))
+                            addView(TvDesign.poster(activity, item.imageUrl, item.title, "anilist:${item.id}"), LinearLayout.LayoutParams(-1, -2))
                             addView(TvDesign.text(activity, item.title, 16f, true).apply { setPadding(dp(2), dp(7), dp(2), dp(2)) })
                             val caption = listOfNotNull(
                                 item.rank.takeIf { kind == "rank" && it > 0 }?.let { "#${it}" },
@@ -366,7 +366,7 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
                 val item = metadata
                 if (item != null) {
                     val detail = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL }
-                    detail.addView(TvDesign.poster(activity, item.imageUrl, item.title), LinearLayout.LayoutParams(dp(148), dp(222)).apply { rightMargin = dp(22) })
+                    detail.addView(TvDesign.poster(activity, item.imageUrl, item.title, "anilist:${item.id}"), LinearLayout.LayoutParams(dp(148), dp(222)).apply { rightMargin = dp(22) })
                     val details = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL }
                     detail.addView(details, LinearLayout.LayoutParams(0, -2, 1f))
                     text(item.title, 26f, false, details, 4)

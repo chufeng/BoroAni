@@ -53,6 +53,16 @@ class TvPosterArchiveTest {
         assertNotNull(archive.stale("three"))
     }
 
+    @Test
+    fun equivalentCoverUrlsReuseTheSameArchiveEntry() {
+        val archive = TvPosterArchive(folder.newFolder("canonical"))
+        archive.write("https://example.test/poster.jpg?width=480#one", "image".toByteArray())
+        archive.write("anilist:42", "image".toByteArray())
+
+        assertNotNull(archive.fresh("http://example.test/poster.jpg?width=960#two"))
+        assertNotNull(archive.fresh("anilist:42"))
+    }
+
     companion object {
         private const val RETENTION_MILLIS = 90L * 24L * 60L * 60L * 1000L
     }

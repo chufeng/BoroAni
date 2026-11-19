@@ -124,7 +124,7 @@ internal object TvDesign {
     fun cleanupPosterDisk(c: Context, force: Boolean = false) {
         TvPosterArchive.shared(c).cleanupIfNeeded(force)
     }
-    fun poster(c: Context, url: String, title: String): View = object : FrameLayout(c) {
+    fun poster(c: Context, url: String, title: String, cacheKey: String? = null): View = object : FrameLayout(c) {
         override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
             val height = if (View.MeasureSpec.getMode(heightMeasureSpec) == View.MeasureSpec.EXACTLY) heightMeasureSpec
                 else View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.getSize(widthMeasureSpec) * 3 / 2, View.MeasureSpec.EXACTLY)
@@ -148,22 +148,24 @@ internal object TvDesign {
         addView(absent, FrameLayout.LayoutParams(-1, -2, android.view.Gravity.BOTTOM))
         if (url.startsWith("https://")) {
             val archive = TvPosterArchive.shared(c)
-            val fresh = archive.fresh(url)
-            val stale = archive.stale(url)
+            val stableKey = archive.canonicalKey(cacheKey ?: url)
+            val fresh = archive.fresh(stableKey)
+            val stale = archive.stale(stableKey)
             fun show(source: Any, fallback: File?, retryNetwork: Boolean) {
                 image.load(source, loader(c)) {
                     size(288, 432); allowHardware(false); crossfade(false)
+                    memoryCacheKey(stableKey); diskCacheKey(stableKey)
                     listener(
                         onSuccess = { _, result ->
                             placeholderImage.visibility = View.GONE
                             absent.visibility = View.GONE
-                            if (source is String) archive.storeAsync(url, result.drawable)
+                            if (source is String) archive.storeAsync(stableKey, result.drawable)
                         },
                         onError = { _, _ ->
                             when {
                                 source is File && retryNetwork -> {
-                                    archive.discard(url)
-                                    show(url, stale, false)
+                                    archive.discard(stableKey)
+                                    show(url, null, false)
                                 }
                                 source is String && fallback != null -> show(fallback, null, false)
                                 else -> absent.visibility = View.VISIBLE

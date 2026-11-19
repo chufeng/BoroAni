@@ -32,42 +32,44 @@ internal class TvPosterArchive(
     @Volatile
     private var lastCleanupAt = now()
 
-    fun fresh(url: String): File? = cachedFile(url)?.takeIf { file ->
+    fun fresh(key: String): File? = cachedFile(key)?.takeIf { file ->
         val age = now() - file.lastModified()
         age <= maxAgeMillis
     }
 
-    fun stale(url: String): File? = cachedFile(url)?.takeIf { it.length() > 0 }
+    fun stale(key: String): File? = cachedFile(key)?.takeIf { it.length() > 0 }
 
-    fun discard(url: String) {
+    fun discard(key: String) {
         synchronized(lock) {
-            cachedFile(url)?.delete()
+            cachedFile(key)?.delete()
         }
     }
 
-    fun storeAsync(url: String, drawable: Drawable) {
-        if (url.isBlank() || drawable !is BitmapDrawable || !writesInFlight.add(url)) return
+    fun storeAsync(key: String, drawable: Drawable) {
+        val normalizedKey = canonicalKey(key)
+        if (normalizedKey.isBlank() || drawable !is BitmapDrawable || !writesInFlight.add(normalizedKey)) return
         val bitmap = drawable.bitmap ?: run {
-            writesInFlight.remove(url)
+            writesInFlight.remove(normalizedKey)
             return
         }
         writer.execute {
             try {
                 val output = ByteArrayOutputStream()
                 if (bitmap.compress(Bitmap.CompressFormat.WEBP, WEBP_QUALITY, output)) {
-                    write(url, output.toByteArray())
+                    write(normalizedKey, output.toByteArray())
                 }
             } finally {
-                writesInFlight.remove(url)
+                writesInFlight.remove(normalizedKey)
             }
         }
     }
 
-    internal fun write(url: String, bytes: ByteArray) {
-        if (url.isBlank() || bytes.isEmpty()) return
+    internal fun write(key: String, bytes: ByteArray) {
+        val normalizedKey = canonicalKey(key)
+        if (normalizedKey.isBlank() || bytes.isEmpty()) return
         synchronized(lock) {
             directory.mkdirs()
-            val target = fileFor(url)
+            val target = fileFor(normalizedKey)
             val pending = File.createTempFile("poster-", ".pending", directory)
             try {
                 pending.writeBytes(bytes)
@@ -94,17 +96,27 @@ internal class TvPosterArchive(
         }
     }
 
-    private fun cachedFile(url: String): File? {
-        if (url.isBlank()) return null
-        val file = fileFor(url)
+    private fun cachedFile(key: String): File? {
+        val normalizedKey = canonicalKey(key)
+        if (normalizedKey.isBlank()) return null
+        val file = fileFor(normalizedKey)
         return file.takeIf { it.isFile }
     }
 
-    private fun fileFor(url: String): File {
+    private fun fileFor(key: String): File {
         val digest = MessageDigest.getInstance("SHA-256")
-            .digest(url.toByteArray(Charsets.UTF_8))
+            .digest(key.toByteArray(Charsets.UTF_8))
             .joinToString("") { "%02x".format(it.toInt() and 0xff) }
         return File(directory, "$digest.webp")
+    }
+
+    internal fun canonicalKey(value: String): String {
+        val trimmed = value.trim()
+        if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) return trimmed
+        return trimmed
+            .substringBefore('#')
+            .substringBefore('?')
+            .replaceFirst("http://", "https://")
     }
 
     private fun pruneLocked() {
