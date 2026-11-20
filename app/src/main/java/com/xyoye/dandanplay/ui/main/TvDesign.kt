@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.InsetDrawable
 import android.graphics.drawable.StateListDrawable
+import android.util.Log
 import android.view.View
 import android.view.Gravity
 import android.widget.*
@@ -105,7 +106,12 @@ internal object TvDesign {
         loader?.let { return it }
         val app = c.applicationContext
         val dispatch = Dispatcher().apply { maxRequests = 3; maxRequestsPerHost = 3 }
-        val memoryCache = MemoryCache.Builder(app).maxSizePercent(0.08).build()
+        // TV grids can churn dozens of covers while changing catalogs. Keep only a small,
+        // reclaimable cache in memory; the durable WebP archive handles warm reloads.
+        val memoryCache = MemoryCache.Builder(app)
+            .maxSizeBytes(MEMORY_CACHE_BYTES)
+            .strongReferencesEnabled(false)
+            .build()
         val diskCache = DiskCache.Builder()
             .directory(File(app.cacheDir, "tv-image-cache"))
             .maxSizeBytes(64L * 1024L * 1024L)
@@ -118,8 +124,11 @@ internal object TvDesign {
         ).memoryCache(memoryCache).diskCache(diskCache)
             .crossfade(false).build().also { loader = it }
     }
-    fun releaseImageMemory() {
-        imageMemoryCache?.clear()
+    fun releaseImageMemory(reason: String = "manual") {
+        imageMemoryCache?.let {
+            Log.i(MEMORY_TAG, "release reason=$reason budgetBytes=$MEMORY_CACHE_BYTES")
+            it.clear()
+        }
     }
     fun cleanupPosterDisk(c: Context, force: Boolean = false) {
         TvPosterArchive.shared(c).cleanupIfNeeded(force)
@@ -153,7 +162,7 @@ internal object TvDesign {
             val stale = archive.stale(stableKey)
             fun show(source: Any, fallback: File?, retryNetwork: Boolean) {
                 image.load(source, loader(c)) {
-                    size(288, 432); allowHardware(false); crossfade(false)
+                    size(POSTER_WIDTH, POSTER_HEIGHT); allowHardware(false); allowRgb565(true); crossfade(false)
                     memoryCacheKey(stableKey); diskCacheKey(stableKey)
                     listener(
                         onSuccess = { _, result ->
@@ -193,4 +202,9 @@ internal object TvDesign {
             v.nextFocusDownId = content.getOrNull(r + 1)?.let { it[col.coerceAtMost(it.lastIndex)] }?.id ?: v.id
         } }
     }
+
+    private const val MEMORY_TAG = "BoroAniMemory"
+    private const val MEMORY_CACHE_BYTES = 6 * 1024 * 1024
+    private const val POSTER_WIDTH = 240
+    private const val POSTER_HEIGHT = 360
 }

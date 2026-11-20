@@ -58,7 +58,7 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
     fun close() {
         active = false
         job?.cancel()
-        TvDesign.releaseImageMemory()
+        TvDesign.releaseImageMemory("close")
         TvDesign.cleanupPosterDisk(activity, force = true)
     }
     fun resume() {
@@ -99,6 +99,7 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
     }
     private fun loadList(more: Boolean, refresh: Boolean) {
         if (!more) {
+            TvDesign.releaseImageMemory("catalog_reload")
             if (kind == "season" && followCurrentSeason) season = AniDiscoverRules.currentSeason()
             loadedPages = 0; hasMore = false; items = emptyList(); notice = ""
         }
@@ -175,8 +176,8 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
             renderPending = true
             return
         }
-        if (isPosterGrid(renderedPage) && !isPosterGrid(page)) {
-            TvDesign.releaseImageMemory()
+        if (isPosterGrid(renderedPage) != isPosterGrid(page)) {
+            TvDesign.releaseImageMemory("poster_transition")
         }
         renderPending = false
         activeEditor = null
@@ -503,12 +504,19 @@ internal class AniTvPage(private val activity: MainActivity, private val exit: (
         } else retry?.let { action -> actions(root) { row, members -> chip(row, members, "重试") { action() } } }
         TvDesign.wire(rows, navigation)
         val renderedPage = page
-        shell.viewTreeObserver.addOnGlobalFocusChangeListener { _, current ->
-            val index = views.indexOf(current)
-            val railIndex = navigation.indexOf(current)
-            if (index >= 0) focus[renderedPage] = index
-            else if (railIndex >= 0) focus[renderedPage] = -railIndex - 1
+        fun trackFocus(view: View) {
+            val existing = view.onFocusChangeListener
+            view.setOnFocusChangeListener { current, hasFocus ->
+                existing?.onFocusChange(current, hasFocus)
+                if (!hasFocus) return@setOnFocusChangeListener
+                val index = views.indexOf(current)
+                val railIndex = navigation.indexOf(current)
+                if (index >= 0) focus[renderedPage] = index
+                else if (railIndex >= 0) focus[renderedPage] = -railIndex - 1
+            }
         }
+        views.forEach(::trackFocus)
+        navigation.forEach(::trackFocus)
         val saved = focus[page] ?: -1
         controls = views
         navigationControls = navigation

@@ -17,12 +17,12 @@ class IApplication : BaseApplication(){
     }
 
     override fun onLowMemory() {
-        TvDesign.releaseImageMemory()
+        TvDesign.releaseImageMemory("system_low_memory")
         super.onLowMemory()
     }
 
     override fun onTrimMemory(level: Int) {
-        if (level >= TRIM_MEMORY_RUNNING_LOW) TvDesign.releaseImageMemory()
+        if (level >= TRIM_MEMORY_RUNNING_LOW) TvDesign.releaseImageMemory("system_trim_$level")
         super.onTrimMemory(level)
     }
 }
